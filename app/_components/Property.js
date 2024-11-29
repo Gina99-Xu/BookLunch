@@ -8,7 +8,7 @@ export default function Property({ property }) {
     property;
 
   return (
-    <div className="grid grid-cols-3 gap-20 border border-primary-800 py-3 px-10 mb-24">
+    <div className="grid grid-cols-2 gap-20 border border-primary-800 py-3 px-10 mb-24">
       <div className="relative">
         <Image
           src={image}
@@ -19,7 +19,7 @@ export default function Property({ property }) {
       </div>
 
       <div>
-        <h3 className="text-accent-100 font-black text-7xl mb-5  bg-primary-950 p-6 pb-1">
+        <h3 className=" text-black text-5xl mb-5 pb-1 font-bold">
           Property {id}
         </h3>
 
