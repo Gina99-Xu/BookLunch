@@ -3,6 +3,7 @@
 import { CalendarDaysIcon, HomeIcon, UserIcon } from "@heroicons/react/24/solid"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import SignOutButton from "./SignOutButton"
 
 const navLinks = [
   {
@@ -24,7 +25,6 @@ const navLinks = [
 export default function SideNavigation() {
 
   const pathname = usePathname();
-  console.log(pathname)
 
   return (
 
@@ -37,7 +37,7 @@ export default function SideNavigation() {
           </li>
         ))}
         <li className="mt-auto">
-          Signout
+          <SignOutButton />
         </li>
       </ul>
     </nav>

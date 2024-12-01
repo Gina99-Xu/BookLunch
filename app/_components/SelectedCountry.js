@@ -1,15 +1,13 @@
 import { getCountries } from "../_lib/data-service"
 
-export default async function SelectedCountry({ className }) {
+export default async function SelectedCountry({ name, defaultCountry, id, className }) {
   const countries = await getCountries();
 
-  const flag = countries?.find(country => country.name === 'China')
-
   return (
-    <select className={className}>
-      <option value=''>Select country...</option>
+    <select className={className} name={name} id={id} defaultValue={defaultCountry}>
+      <option value=''>Select My Country</option>
       {countries.map(c =>
-        <option key={c.name} value={`${c.name}%${c.flag}`} > {c.name}</option>)
+        <option key={c.name} value={c.name}>{c.name}</option>)
       }
     </select >
   )

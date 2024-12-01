@@ -21,7 +21,7 @@ const authConfig = {
         const existingUser = await getUserByEmail(user.email);
 
         if (!existingUser) {
-          await createUser({ email: user.email, fullName: user.name })
+          await createUser({ email: user.email, fullName: user.fullName })
         }
         return true
 

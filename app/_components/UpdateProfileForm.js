@@ -1,36 +1,40 @@
 'use client'
 
+import { updateUserProfile } from "../_lib/actions";
 import SubmitButton from "./SubmitButton"
 
 
-export default function UpdateProfileForm({ children }) {
+export default function UpdateProfileForm({ loggedUser, children }) {
+
+  const { fullName, email, nationality, nationalID } = loggedUser;
+
   return (
-    <form className="py-8 text-lg px-12 gap-6 flex-col border border-stone-700">
+    <form className="py-10 text-lg px-10 flex-col gap-10 border border-stone-700"
+      action={updateUserProfile}>
       <div className="space-y-2">
         <label>Full Name</label>
         <input
           className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
-          disabled defaultValue='' name='' />
+          defaultValue={fullName} name='fullName' />
       </div>
       <div className="space-y-2">
-        <label>Email address</label>
+        <label>Email</label>
         <input className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
-          disabled defaultValue='' name='' />
+          disabled defaultValue={email} name='email' />
       </div>
       <div className="space-y-2">
-        <div className="mt-2 flex items-center justify-between">
-          <label htmlFor="nationality">Nationality</label>
-          <img src='' alt='country flag' className="h-5 rounded-sm" />
+        <div className="py-4 flex items-center justify-between">
+          <label htmlFor=''>Country of Origin</label>
           {children}
         </div>
       </div>
       <div className="space-y-2">
-        <label>Identity Number</label>
+        <label>National Identity Card Number</label>
         <input className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
-          disabled defaultValue='' name='' />
+          defaultValue={nationalID} name='nationalID' />
       </div>
       <div className="flex justify-end items-center gap-2 mt-4">
-        <SubmitButton>Update profile</SubmitButton>
+        <SubmitButton pendingLabel="Updating...">Update profile</SubmitButton>
       </div>
 
     </form>
