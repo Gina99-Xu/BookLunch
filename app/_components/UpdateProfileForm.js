@@ -6,7 +6,7 @@ import SubmitButton from "./SubmitButton"
 
 export default function UpdateProfileForm({ loggedUser, children }) {
 
-  const { fullName, email, nationality, nationalID } = loggedUser;
+  const { fullName, email, nationalID } = loggedUser;
 
   return (
     <form className="py-10 text-lg px-10 flex-col gap-10 border border-stone-700"

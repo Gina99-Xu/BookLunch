@@ -4,42 +4,42 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import Button from "./Button";
 
 
-
 export function Filter() {
 
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const activeFilter = searchParams.get("capacity");
+  const activeFilter = searchParams.get("country");
 
   function handleFilter(filter) {
     const params = new URLSearchParams(searchParams);
-    params.set("capacity", filter);
+    params.set("country", filter);
+    console.log(params)
     router.replace(`${pathname}?${params.toString()}`, { scroll: false })
   }
 
   return (
-    <div className="border border-primary-800 flex">
-      <Button filter="all"
+    <div className="flex justify-end gap-2 ">
+      <Button filter="Australia"
         handleFilter={handleFilter}
         activeFilter={activeFilter}>
-        All properties
+        Australia
       </Button>
-      <Button filter="small"
+      <Button filter="Singapore"
         handleFilter={handleFilter}
         activeFilter={activeFilter}>
-        up to 3 guests
+        Singapore
       </Button>
-      <Button filter="medium"
+      <Button filter="Malaysia"
         handleFilter={handleFilter}
         activeFilter={activeFilter}>
-        up to 5 guests
+        Malaysia
       </Button>
-      <Button filter="large"
+      <Button filter="Japan"
         handleFilter={handleFilter}
         activeFilter={activeFilter}>
-        6 or more guests
+        Japan
       </Button>
     </div>
   )

@@ -1,28 +1,40 @@
-import Image from "next/image";
-import Link from "next/link";
-import bg2 from "@/public/bg2.jpg"
+
+import Image from 'next/image';
+import Link from 'next/link';
+import bg from '@/public/images/bg.jpg'
+
 
 export default function Page() {
-  return (<div className="mt-24">
-    <Image
-      src={bg2}
-      fill
-      placeholder="blur"
-      quality={80}
 
-      className="object-cover object-top opacity-55"
-      alt="House background image"
-    />
+  return (
+    <main className="mt-24">
+      <div className='opacity-50'>
+        <Image
+          src={bg}
+          fill
+          className="object-cover"
+          alt="food"
+        />
 
-    <div className="relative z-10 text-center">
+      </div>
 
-      <Link
-        href="/properties"
-        className="bg-accent-500 px-8 py-6 text-primary-850 text-lg font-semibold hover:bg-accent-600 transition-all"
-      >
-        Explore Resort Now
-      </Link>
-    </div>
-  </div>
+      <div className="relative z-10 text-center">
+        <h1 className="text-3xl text-gray-500 mb-10 tracking-tight font-normal">
+          Social Meals with Discounted Price
+        </h1>
+        <Link
+          href="/cabins"
+          className="bg-accent-500 px-8 py-6 text-primary-800 text-lg font-semibold hover:bg-accent-600 transition-all"
+        >
+          How it works
+        </Link>
+        <Link
+          href="/cabins"
+          className="bg-accent-500 px-8 py-6 text-primary-800 text-lg font-semibold hover:bg-accent-600 transition-all"
+        >
+          Explore Restaurants
+        </Link>
+      </div>
+    </main>
   )
 }

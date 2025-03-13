@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { CalendarDaysIcon, HomeIcon, UserIcon } from "@heroicons/react/24/solid"
 import Link from "next/link"

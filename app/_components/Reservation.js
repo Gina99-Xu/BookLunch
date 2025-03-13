@@ -12,19 +12,16 @@ async function Reservation({ property }) {
 
   const session = await auth();
 
-
   return (
-    <div className="flex flex-row border border-primary-200 ">
+    <div className="grid grid-cols-2 border rounded-md border-slate-300">
       <DateSelector
         settings={settings}
         bookedDates={bookedDates}
         property={property}
       />
       {session?.user ? <ReservationForm property={property} user={session.user} /> : <LoginMessage />}
-
     </div>
   )
-
 }
 
 export default Reservation;

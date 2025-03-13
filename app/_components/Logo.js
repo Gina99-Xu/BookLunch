@@ -5,11 +5,12 @@ import Image from "next/image";
 export default function Logo() {
   return (
     <Link href="/" className="flex items-center gap-4 z-10">
-      <Image
+      <image
         src={logo}
         height="45"
         quality={100}
         width="45"
+        sizes=""
         alt="Rental logo"
         className="rounded aspect-square object-cover"
       />

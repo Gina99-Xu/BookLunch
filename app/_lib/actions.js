@@ -1,16 +1,83 @@
-"use server";
+'use server'
 
 import { revalidatePath } from "next/cache";
 import { auth, signIn, signOut } from "./auth";
 import { supabase } from "./supabase";
 import { getBookings } from "./data-service";
-import { se } from "date-fns/locale";
+import { redirect } from "next/navigation";
 
 
 /**bookings */
+export async function updateBooking(formData) {
+  const bookingId = Number(formData.get("bookingId"));
+  console.log(bookingId);
+  const session = await auth();
+  if (!session) throw new Error("You must logged in first")
+
+  const userBookings = await getBookings(session.user.userId)
+  const userBookingIds = userBookings.map(booking => booking.id)
+  console.log(userBookingIds);
+
+  if (!userBookingIds.includes(bookingId)) {
+    throw new Error('booking id doesnt exit')
+  }
+
+  const updatedBookingData = {
+    numGuests: Number(formData.get("numGuests")),
+    observations: formData.get("observations")
+  }
+
+  const { error } = await supabase
+    .from("bookings")
+    .update(updatedBookingData)
+    .eq("id", bookingId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error(error);
+    throw new Error("Bookings could not be updated");
+  }
+
+  revalidatePath(`/account/reservations/edit/${bookingId}`)
+  revalidatePath("/account/reservations")
+
+  redirect("/account/reservations")
+
+}
+
+
+export async function createBooking(bookingData, formData) {
+  const session = await auth();
+  if (!session) throw new Error("You must logged in first")
+
+  const newBooking = {
+    ...bookingData,
+    userId: session.user.userId,
+    numGuests: Number(formData.get("numGuests")),
+    extrasPrice: 0,
+    observations: formData.get("observations"),
+    totalPrice: bookingData.propertyPrice,
+    isPaid: false,
+    hasBreakfast: false,
+    status: "unconfirmed"
+  }
+
+  const { error } = await supabase.from("bookings")
+    .insert([newBooking])
+
+  if (error) {
+    console.error(error);
+    throw new Error("Error insert booking data");
+  }
+
+  revalidatePath(`/properties/${bookingData.propertyId}`)
+  redirect('/properties/thankyou')
+}
+
+
 export async function deleteBooking(bookingId) {
   const session = await auth();
-
   if (!session) throw new Error("You must logged in first")
 
   const userBookings = await getBookings(session.user.userId)
@@ -33,7 +100,6 @@ export async function deleteBooking(bookingId) {
 }
 
 
-
 /**signin and signout */
 export async function signInAction() {
   await signIn("google", { redirectTo: "/account" })
@@ -43,8 +109,8 @@ export async function signOutAction() {
   await signOut({ redirectTo: "/" })
 }
 
-/** user */
 
+/** user */
 export async function updateUserProfile(formData) {
   const session = await auth();
 

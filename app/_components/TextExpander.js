@@ -12,7 +12,7 @@ export default function TextExpander({ children }) {
   return (
     <span>
       {displayText}{" "}
-      <button className="text-black border-b"
+      <button className="text-black font-bold"
         onClick={() => setIsExpanded(!isExpanded)}>
         {isExpanded ? "Show less" : "Show more"}
       </button>

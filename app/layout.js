@@ -1,13 +1,15 @@
 import Header from "./_components/Header"
 import "@/app/_styles/globals.css"
 import { ReservationProvider } from "./_components/ReservationContext"
+import { CityPositionProvider } from "./_components/CityPositionContext"
+import { TableProvider } from "./_components/TableContext"
 
 export const metadata = {
   title: {
-    template: `Rentals | %s`,
-    default: "Rentals"
+    template: `Eat with Less | %s`,
+    default: "Eat with Less"
   },
-  description: 'book your insepction now!',
+  description: 'Book your reservations today!',
 }
 
 export default function RootLayout({ children }) {
@@ -17,10 +19,16 @@ export default function RootLayout({ children }) {
         <Header />
         <div className="flex-1 px-8 py-12 grid">
           <main className="max-w-7xl mx-auto w-full">
-            <ReservationProvider> {children}</ReservationProvider>
+            <CityPositionProvider>
+              <ReservationProvider>
+                <TableProvider>
+                  {children}
+                </TableProvider>
+              </ReservationProvider>
+            </CityPositionProvider>
           </main>
         </div>
       </body>
-    </html>
+    </html >
   )
 }

@@ -4,26 +4,28 @@ import TextExpander from "./TextExpander";
 
 export default function Property({ property }) {
 
-  const { id, description, maxCapacity, regularPrice, discount, image } =
+  const { id, description, maxCapacity, regularPrice, discount, image, name } =
     property;
 
   return (
-    <div className="grid grid-cols-2 gap-20 border border-primary-800 py-3 px-10 mb-24">
+    <div className="grid grid-cols-2 gap-20 border border-slate-300 rounded-md py-8 px-10 mb-24">
       <div className="relative">
         <Image
           src={image}
-          height={800}
-          width={800}
+          height={600}
+          width={600}
+          sizes=""
           alt={`Property ${id}`}
+          className="rounded-md"
         />
       </div>
 
       <div>
         <h3 className=" text-black text-5xl mb-5 pb-1 font-bold">
-          Property {id}
+          {name}
         </h3>
 
-        <p className="text-lg text-primary-300 mb-10">
+        <p className="text-lg text-black mb-10">
           <TextExpander>{description}</TextExpander>
         </p>
 
@@ -31,20 +33,21 @@ export default function Property({ property }) {
           <li className="flex gap-3 items-center">
             <UsersIcon className="h-5 w-5 text-primary-600" />
             <span className="text-lg">
-              For up to <span className="font-bold">{maxCapacity}</span> guests
+              <span className="font-bold">${property.discount}</span>
+              {''} discount for minimum spent of <span className="font-bold">${property.regularPrice}</span> per meal
             </span>
           </li>
           <li className="flex gap-3 items-center">
             <MapPinIcon className="h-5 w-5 text-primary-600" />
             <span className="text-lg">
-              Located in the heart of the{" "}
-              <span className="font-bold">Dolomites</span> (Italy)
+              Located at {" "}
+              <span className="font-bold">{property.address}</span>
             </span>
           </li>
           <li className="flex gap-3 items-center">
             <EyeSlashIcon className="h-5 w-5 text-primary-600" />
             <span className="text-lg">
-              Privacy <span className="font-bold">100%</span> guaranteed
+              Ratings <span className="font-bold">{property.ratings}</span>
             </span>
           </li>
         </ul>

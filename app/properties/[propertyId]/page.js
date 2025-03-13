@@ -6,16 +6,16 @@ import Reservation from '@/app/_components/Reservation'
 
 export default async function Page({ params }) {
 
-  const property = await getProperty(params.propertyId);
+  const { propertyId } = await params;
+  const property = await getProperty(propertyId);
 
   return (
     <div className="max-w-6xl mx-auto mt-8">
       <Property property={property} />
       <div>
-        <h2 className="text-5xl font-semibold text-center mb-10 text-black">
-          Reserve {property.name} today. Pay on arrival.
-        </h2>
-
+        <h4 className="text-3xl font-semibold text-center mb-10 text-black">
+          Reserve Today & Pay Later
+        </h4>
         <Suspense fallback={<Spinner />}>
           <Reservation property={property} />
         </Suspense>

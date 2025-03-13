@@ -1,8 +1,5 @@
-import { Suspense } from "react"
-import Spinner from "../_components/Spinner"
 import PropertyList from '../_components/PropertyList'
 import { getProperties } from "../_lib/data-service";
-import PropertyCard from "../_components/PropertyCard";
 import { Filter } from "../_components/Filter";
 
 export const metadata = {
@@ -12,14 +9,23 @@ export const metadata = {
 
 export default async function Page({ searchParams }) {
 
-  const properlist = await getProperties();
-  const filter = searchParams?.capacity ?? 'all'
+  const properties = await getProperties();
+  const filter = await searchParams;
+  const filterResult = filter.country ?? 'Australia'
+
+  const filteredProperties = properties.filter(property => property.country === filterResult);
+
   return (
     <div>
+      <div className="flex justify-start mb-8">
+        <h1 className="text-4xl mb-5 text-accent-600 font-semibold">
+          Our Restaurant Selections
+        </h1>
+      </div>
       <div className="flex justify-end mb-8">
         <Filter />
       </div>
-      {properlist.length > 0 && <PropertyList properties={properlist} filter={filter} />}
+      {filteredProperties.length > 0 && <PropertyList properties={filteredProperties} filter={filterResult} />}
     </div>
 
   )

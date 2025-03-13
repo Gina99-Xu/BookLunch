@@ -1,42 +1,44 @@
 'use client'
 
+
+import "react-day-picker/dist/style.css";
+import { timeSlots } from "../_lib/utils";
 import { DayPicker } from "react-day-picker";
 import { useReservation } from "./ReservationContext";
-import { differenceInDays, isWithinInterval } from "date-fns";
-import "react-day-picker/dist/style.css";
-function isAlreadyBooked(range, datesArr) {
-  return (
-    range.from &&
-    range.to &&
-    datesArr.some(date => isWithinInterval(date, { start: range.from, end: range.to })
-    ))
-}
-export default function DateSelector({ settings, property, bookedDates }) {
+import { TimeSlots } from "./TimeSlots";
+import { BookingSummaryFooter } from "./BookingSummaryFooter";
+import "../_styles/globals.css";
 
-  const { range, setRange, resetRange } = useReservation();
+export default function DateSelector({ property }) {
 
-  const displayRange = isAlreadyBooked(range, bookedDates) ? {} : range
+  const { selectedDate, setSelectedDate, resetDate, resetTime } = useReservation();
+  const { discount, regularPrice } = property;
+  console.log(selectedDate)
+  function resetAll() {
+    console.log('click')
+    resetDate();
+    resetTime()
+  }
 
-  const { regularPrice, discount } = property;
-  const numNights = differenceInDays(displayRange.to, displayRange.from);
-  const propertyPrice = numNights * (regularPrice - discount);
-
-  const { minBookingLength, maxBookingLength } = settings;
 
   return (
-    <div className="py-4 px-4">
-      <DayPicker
-        mode="range"
-        onSelect={setRange}
-        selected={range}
-        min={minBookingLength + 1}
-        max={maxBookingLength}
-        fromMonth={new Date()}
-        fromDate={new Date()}
-        toYear={new Date().getFullYear() + 5}
-        numberOfMonths={2}
+    <div className="flex flex-col gap-10 px-4 py-4 justify-between">
+      <div className="flex justify-center">
+        <DayPicker
+          mode="single"
+          selected={selectedDate}
+          onSelect={setSelectedDate}
+          required
+          className="custom-day-picker"
+          classNames={{
+            today: `text-black`,
+            selected: `bg-slate-300 border-gray-400 text-black`,
+          }}
+        />
+      </div>
+      <TimeSlots />
+      <BookingSummaryFooter property={property} />
+    </div >
 
-      />
-    </div>
   )
 }

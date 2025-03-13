@@ -1,14 +1,29 @@
-import { revalidatePath } from "next/cache";
+
 import { supabase } from "./supabase";
 import { notFound } from "next/navigation";
 import { eachDayOfInterval } from "date-fns";
 
 
+export async function getBooking(bookingId) {
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("*")
+    .eq("id", bookingId)
+    .single()
+
+  if (error) {
+    console.error(error);
+    throw new Error("Bookings could not get loaded");
+  }
+
+  return data;
+}
 
 export async function getBookings(userId) {
   const { data, error } = await supabase
     .from("bookings")
-    .select("*")
+    .select(`id, created_at, startDate, endDate, numNights, numGuests,
+      extrasPrice, observations, totalPrice, propertyPrice, properties(image, id)`)
     .eq("userId", userId)
 
   if (error) {
@@ -21,7 +36,6 @@ export async function getBookings(userId) {
 
 
 export const getProperty = async function (propertyId) {
-  revalidatePath(`/properties/${propertyId}`)
   const { data, error } = await supabase.from('properties')
     .select('*')
     .eq('id', propertyId)
@@ -31,12 +45,10 @@ export const getProperty = async function (propertyId) {
     console.log(error);
     notFound();
   }
-
   return data;
 }
 
 export const getProperties = async function () {
-  revalidatePath('/properties')
   const { data, error } = await supabase.from('properties')
     .select('*')
 
@@ -73,7 +85,6 @@ export async function getSettings() {
 }
 
 export async function getBookedDatesByPropertyId(propertyId) {
-  revalidatePath(`/properties/${propertyId}`)
   let today = new Date();
   today.setUTCHours(0, 0, 0, 0);
   today = today.toISOString();
@@ -106,11 +117,8 @@ export async function getBookedDatesByPropertyId(propertyId) {
 
 /** USER PART */
 export async function getUserByEmail(email) {
-  console.log(email)
   const { data, error } = await supabase.from("users").select("*")
     .eq("email", email).single()
-
-  console.log(data)
   return data;
 }
 
