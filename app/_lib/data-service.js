@@ -22,8 +22,7 @@ export async function getBooking(bookingId) {
 export async function getBookings(userId) {
   const { data, error } = await supabase
     .from("bookings")
-    .select(`id, created_at, startDate, endDate, numNights, numGuests,
-      extrasPrice, observations, totalPrice, propertyPrice, properties(image, id)`)
+    .select('*')
     .eq("userId", userId)
 
   if (error) {
@@ -35,10 +34,10 @@ export async function getBookings(userId) {
 }
 
 
-export const getProperty = async function (propertyId) {
-  const { data, error } = await supabase.from('properties')
+export const getRestaurant = async function (restaurantId) {
+  const { data, error } = await supabase.from('restaurants')
     .select('*')
-    .eq('id', propertyId)
+    .eq('id', restaurantId)
     .single()
 
   if (error) {
@@ -48,13 +47,13 @@ export const getProperty = async function (propertyId) {
   return data;
 }
 
-export const getProperties = async function () {
-  const { data, error } = await supabase.from('properties')
+export const getRestaurants = async function () {
+  const { data, error } = await supabase.from('restaurants')
     .select('*')
 
   if (error) {
     console.error(error);
-    throw new Error('Properties cannot be loaded')
+    throw new Error('restaurants cannot be loaded')
   }
 
   return data;

@@ -1,8 +1,6 @@
 'use client'
 
 import React, { Suspense, useState } from 'react';
-import MyMapContainer from './MyMapContainer';
-import PropertyList from './PropertyList';
 
 export default function ToggleView({ children }) {
 
@@ -17,12 +15,12 @@ export default function ToggleView({ children }) {
   const listChild = React.Children.toArray(children)[1];
 
   return (
-    <div className="flex flex-col items-center">
+    <div>
       <button
         onClick={toggleView}
-        className="mb-4 border border-gray-300 rounded-xl px-4 py-2 text-gray-800 hover:bg-gray-100"
+        className="mb-4 border border-gray-100 rounded-md px-4 py-2 font-semibold text-gray-200 bg-gray-800  hover:bg-gray-500 hover:text-gray-100"
       >
-        Switch to {view === 'map' ? 'List' : 'Map'} View
+        {view === 'map' ? 'List' : 'Map'} View
       </button>
 
       {view === 'map' ? (

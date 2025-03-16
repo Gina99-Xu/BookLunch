@@ -47,6 +47,16 @@ export async function updateBooking(formData) {
 }
 
 
+/**
+ * 
+ * 
+bookingdata - seats, comments, time, date, 
+restaurantId, restaurant default information etc
+
+regularPrice, discount, id, minimum 
+ */
+
+
 export async function createBooking(bookingData, formData) {
   const session = await auth();
   if (!session) throw new Error("You must logged in first")
@@ -54,13 +64,7 @@ export async function createBooking(bookingData, formData) {
   const newBooking = {
     ...bookingData,
     userId: session.user.userId,
-    numGuests: Number(formData.get("numGuests")),
-    extrasPrice: 0,
     observations: formData.get("observations"),
-    totalPrice: bookingData.propertyPrice,
-    isPaid: false,
-    hasBreakfast: false,
-    status: "unconfirmed"
   }
 
   const { error } = await supabase.from("bookings")
@@ -71,8 +75,8 @@ export async function createBooking(bookingData, formData) {
     throw new Error("Error insert booking data");
   }
 
-  revalidatePath(`/properties/${bookingData.propertyId}`)
-  redirect('/properties/thankyou')
+  revalidatePath(`/restaurants/${bookingData.restaurantId}`)
+  redirect('/restaurants/thankyou')
 }
 
 
@@ -95,7 +99,6 @@ export async function deleteBooking(bookingId) {
     console.error(error);
     throw new Error("Bookings could not get loaded");
   }
-
   revalidatePath('/account/reservations')
 }
 
@@ -133,7 +136,7 @@ export async function updateUserProfile(formData) {
 
   if (error) throw new Error("Error updating profile")
 
-  revalidatePath("/account/profile")
+  revalidatePath("/account")
 
 }
 

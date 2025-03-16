@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import React, { useEffect, useState } from "react";
-import { getProperties } from "../_lib/data-service";
+import { getRestaurants } from "../_lib/data-service";
 import { useCityPosition } from "./CityPositionContext";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -35,7 +35,7 @@ export default function MyMap() {
           <button
             className="bg-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-opacity-75
           border flex justify-center text-sm font-semibold px-4 py-4"
-            onClick={() => router.push(`/properties/${property.id}`)}>View Details</button>
+            onClick={() => router.push(`/restaurants/${property.id}`)}>View Details</button>
         </div>
       </>
 
@@ -44,7 +44,7 @@ export default function MyMap() {
 
   useEffect(() => {
     async function getResult() {
-      const result = await getProperties();
+      const result = await getRestaurants();
       if (result !== null && result !== undefined && latitude !== undefined && longtitude !== undefined) {
         setProperties(result);
       }

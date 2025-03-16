@@ -1,11 +1,9 @@
 
-import { getProperties } from "../_lib/data-service";
 import CitiesList from "./CitiesList";
 import { LazyMap } from "./LazyMap";
 
 export default async function MyMapContainer({ properties, searchParams }) {
 
-  // const properties = await getProperties();
   const filter = await searchParams;
 
   console.log(filter);

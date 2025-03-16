@@ -4,10 +4,10 @@ import DateSelector from "./DateSelector";
 import LoginMessage from "./LoginMessage";
 import ReservationForm from "./ReservationForm";
 
-async function Reservation({ property }) {
+async function Reservation({ restaurant }) {
   const [settings, bookedDates] = await Promise.all([
     getSettings(),
-    getBookedDatesByPropertyId(property.id)
+    getBookedDatesByPropertyId(restaurant.id)
   ])
 
   const session = await auth();
@@ -17,9 +17,9 @@ async function Reservation({ property }) {
       <DateSelector
         settings={settings}
         bookedDates={bookedDates}
-        property={property}
+        restaurant={restaurant}
       />
-      {session?.user ? <ReservationForm property={property} user={session.user} /> : <LoginMessage />}
+      {session?.user ? <ReservationForm restaurant={restaurant} user={session.user} /> : <LoginMessage />}
     </div>
   )
 }

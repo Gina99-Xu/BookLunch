@@ -4,7 +4,7 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import { getProperties } from "../_lib/data-service";
+import { getRestaurants } from "../_lib/data-service";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import HowItWorks from "./HowItWorks";
@@ -16,7 +16,7 @@ export default function HomepageMap() {
 
   useEffect(() => {
     async function getResult() {
-      const result = await getProperties();
+      const result = await getRestaurants();
       if (result !== null && result !== undefined) {
         setProperties(result);
       }

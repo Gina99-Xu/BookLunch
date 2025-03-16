@@ -9,10 +9,10 @@ import { TimeSlots } from "./TimeSlots";
 import { BookingSummaryFooter } from "./BookingSummaryFooter";
 import "../_styles/globals.css";
 
-export default function DateSelector({ property }) {
+export default function DateSelector({ restaurant }) {
 
   const { selectedDate, setSelectedDate, resetDate, resetTime } = useReservation();
-  const { discount, regularPrice } = property;
+  const { discount, regularPrice } = restaurant;
   console.log(selectedDate)
   function resetAll() {
     console.log('click')
@@ -37,7 +37,7 @@ export default function DateSelector({ property }) {
         />
       </div>
       <TimeSlots />
-      <BookingSummaryFooter property={property} />
+      <BookingSummaryFooter property={restaurant} />
     </div >
 
   )

@@ -7,26 +7,35 @@ import { useTable } from "./TableContext";
 import Seating from "./Seatings";
 
 
-export default function ReservationForm({ property, user }) {
+export default function ReservationForm({ restaurant }) {
 
-  const { selectedDate, setSelectedDate, selectedTime, setSelectedTime, resetDate, resetTime } = useReservation();
-  const { regularPrice, discount, id } = property;
-  const { tables, setTables, setSelectedTableSeat, selectedTableSeat, handleTableClick } = useTable();
-  console.log(selectedTableSeat);
+  const { selectedDate, selectedTime } = useReservation();
+  console.log(selectedDate, selectedTime);
+  console.log(selectedTime);
 
-  const propertyPrice = (regularPrice - discount);
+  const { regularPrice, discount, id, minimum } = restaurant;
+  console.log(regularPrice, discount, id, minimum);
+
+  const { selectedTableSeat } = useTable();
+  console.log(selectedTableSeat['name']);
+
+  const priceAfterDiscount = (regularPrice - discount);
 
   const bookingData = {
     selectedDate,
     selectedTime,
-    propertyPrice,
-    propertyId: id
+    regularPrice,
+    discount,
+    minimum,
+    priceAfterDiscount,
+    restaurantId: id,
+    selectedTableSeat
   }
 
   const createBookingwithData = createBooking.bind(null, bookingData)
 
   return (
-    <div className="flex flex-col gap-8 bg-stone-400 px-4 py-4">
+    <div className="border-l-2 flex flex-col gap-8 bg-stale-200 px-4 py-4">
       <Seating />
       <form className="flex-grow px-4 text-md grid grid-cols-1"
         action={async (formData) => {
@@ -34,13 +43,13 @@ export default function ReservationForm({ property, user }) {
           resetRange()
         }}>
         <div>
-          <textarea name="observations" id="observations" className="h-60 mt-4 px-5 py-6 bg-gray-00 text-black font-bold w-full shadow-sm rounded-sm"
+          <textarea name="observations" id="observations" className="border h-60 mt-4 px-5 py-6 bg-gray-00 text-black font-bold w-full shadow-sm rounded-sm"
             placeholder="Anything else we should know about before your arrival such as Any allergies, special requirements?"
           >
           </textarea>
         </div>
         <div className="flex flex-col-reverse justify-end">
-          <SubmitButton pendingLabel="Reserving...">Reserve now</SubmitButton>
+          <SubmitButton pendingLabel="Reserving...">Book Now</SubmitButton>
         </div>
 
       </form>
