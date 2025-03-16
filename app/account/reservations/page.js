@@ -12,7 +12,7 @@ export default async function Page() {
       <h2 className="font-semibold text-2xl text-accent-400 mb-7">
         Your reservations
       </h2>
-      {bookings.length === 0 ? <p>No reservations found! Start Exploring Restaurants Now!</p> :
+      {bookings.length === 0 ? <div className="font-bold text-center text-2xl">No reservations found! Start Exploring Restaurants Now!</div> :
         <ReservationList bookings={bookings} />}
     </div>
   )

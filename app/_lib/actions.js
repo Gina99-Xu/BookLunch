@@ -8,29 +8,29 @@ import { redirect } from "next/navigation";
 
 
 /**bookings */
-export async function updateBooking(formData) {
-  const bookingId = Number(formData.get("bookingId"));
-  console.log(bookingId);
+export async function updateBooking(bookingData) {
+
+  const { id } = bookingData;
+
   const session = await auth();
   if (!session) throw new Error("You must logged in first")
 
   const userBookings = await getBookings(session.user.userId)
   const userBookingIds = userBookings.map(booking => booking.id)
-  console.log(userBookingIds);
 
-  if (!userBookingIds.includes(bookingId)) {
+  if (!userBookingIds.includes(parseInt(id))) {
     throw new Error('booking id doesnt exit')
   }
 
   const updatedBookingData = {
-    numGuests: Number(formData.get("numGuests")),
-    observations: formData.get("observations")
+    ...bookingData,
+    userId: session.user.userId
   }
 
   const { error } = await supabase
     .from("bookings")
     .update(updatedBookingData)
-    .eq("id", bookingId)
+    .eq("id", parseInt(id))
     .select()
     .single()
 
@@ -39,22 +39,10 @@ export async function updateBooking(formData) {
     throw new Error("Bookings could not be updated");
   }
 
-  revalidatePath(`/account/reservations/edit/${bookingId}`)
+  revalidatePath(`/account/reservations/edit/${parseInt(id)}`)
   revalidatePath("/account/reservations")
-
   redirect("/account/reservations")
-
 }
-
-
-/**
- * 
- * 
-bookingdata - seats, comments, time, date, 
-restaurantId, restaurant default information etc
-
-regularPrice, discount, id, minimum 
- */
 
 
 export async function createBooking(bookingData, formData) {
@@ -67,6 +55,8 @@ export async function createBooking(bookingData, formData) {
     observations: formData.get("observations"),
   }
 
+  console.log(typeof bookingData.restaurantId)
+
   const { error } = await supabase.from("bookings")
     .insert([newBooking])
 
@@ -75,7 +65,7 @@ export async function createBooking(bookingData, formData) {
     throw new Error("Error insert booking data");
   }
 
-  revalidatePath(`/restaurants/${bookingData.restaurantId}`)
+  revalidatePath('/account/reservations')
   redirect('/restaurants/thankyou')
 }
 

@@ -83,7 +83,7 @@ export async function getSettings() {
   return data;
 }
 
-export async function getBookedDatesByPropertyId(propertyId) {
+export async function getBookedDatesByPropertyId(restaurantId) {
   let today = new Date();
   today.setUTCHours(0, 0, 0, 0);
   today = today.toISOString();
@@ -92,8 +92,8 @@ export async function getBookedDatesByPropertyId(propertyId) {
   const { data, error } = await supabase
     .from("bookings")
     .select("*")
-    .eq("propertyId", propertyId)
-    .or(`startDate.gte.${today},status.eq.checked-in`);
+    .eq("restaurantId", restaurantId)
+    .or(`selectedDate.gte.${today}`);
 
 
   if (error) {
@@ -101,16 +101,8 @@ export async function getBookedDatesByPropertyId(propertyId) {
     throw new Error("Bookings could not get loaded");
   }
 
-  const bookedDates = data
-    .map((booking) => {
-      return eachDayOfInterval({
-        start: new Date(booking.startDate),
-        end: new Date(booking.endDate),
-      });
-    })
-    .flat();
-
-  return bookedDates
+  const bookedDate = new Date(data.selectedDate);
+  return bookedDate
 
 }
 

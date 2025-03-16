@@ -1,9 +1,18 @@
 import { timeSlots } from "../_lib/utils";
 import { useReservation } from "./ReservationContext";
 
-export function TimeSlots() {
+export function TimeSlots({ selectedTimeParam = '' }) {
   const { selectedTime, setSelectedTime } = useReservation();
-  console.log(selectedTime)
+
+  function handleSelectedTime(timeslot) {
+    if (selectedTimeParam === '') {
+      setSelectedTime(timeslot);
+    } else {
+      setSelectedTime(selectedTimeParam);
+    }
+
+  }
+
   return (
     <div className='flex flex-col gap-2'>
       <div className="grid grid-cols-3 gap-3 mt-2">
@@ -13,7 +22,7 @@ export function TimeSlots() {
             key={timeslot}>
             <button
               className='px-1 py-1 font-semibold'
-              onClick={() => setSelectedTime(timeslot)}
+              onClick={() => handleSelectedTime(timeslot)}
             >{timeslot}</button>
           </div>)}
       </div>

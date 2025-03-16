@@ -1,10 +1,11 @@
 import { useReservation } from "./ReservationContext";
 import { useTable } from "./TableContext";
 
-export function BookingSummaryFooter({ property }) {
+export function BookingSummaryFooter({ restaurant }) {
 
   const { selectedDate, resetDate, resetTime, selectedTime } = useReservation();
-  const { discount, regularPrice } = property;
+
+  const { discount, regularPrice } = restaurant;
 
   function resetAll() {
     console.log('click')
