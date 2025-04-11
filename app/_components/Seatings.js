@@ -1,25 +1,40 @@
 'use client'
 import { useTable } from "./TableContext";
+import { Armchair } from 'lucide-react';
 
 export default function Seating() {
-  const { tables, setTables, setSelectedTableSeat, selectedTableSeat, handleTableClick } = useTable();
-  console.log(selectedTableSeat);
+  const { tables, handleTableClick, selectedTableSeat } = useTable();
 
   return (
-    <div className="text-black px-4">
-      <h5 className="font-bold text-center">Seating</h5>
-      <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6 justify-items-center">
-        {tables.map((table, index) => (
-          <div className="px-2 py-3 font-semibold" key={table.id}>
-            <button onClick={() => handleTableClick(index)}>
-              <span className={`flex px-8 py-4 rounded-md ${table.id === selectedTableSeat.id ? 'bg-slate-300' : 'bg-slate-200'} ${table.available === false ? 'line-through' : ''}`}>
-                Seat - {table.name}
-              </span>
-            </button>
-          </div>
-        ))}
+    <div className="mb-8">
+      <div className="flex items-center gap-2 mb-6">
+        <Armchair className="h-5 w-5 text-amber-600" />
+        <h3 className="text-lg font-semibold text-gray-900">Select Your Seat</h3>
       </div>
 
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+        {tables.map((table, index) => (
+          <button
+            key={table.id}
+            onClick={() => handleTableClick(index)}
+            disabled={!table.available}
+            className={`
+              px-4 py-3 rounded-lg transition-colors relative
+              ${table.id === selectedTableSeat.id 
+                ? 'bg-amber-100 text-amber-900 border-2 border-amber-200' 
+                : table.available 
+                  ? 'bg-gray-50 text-gray-700 hover:bg-amber-50'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              }
+            `}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <Armchair className={`h-4 w-4 ${table.id === selectedTableSeat.id ? 'text-amber-600' : 'text-gray-300'}`} />
+              <span className="font-medium">Table {table.name}</span>
+            </div>
+          </button>
+        ))}
+      </div>
     </div>
-  )
+  );
 }

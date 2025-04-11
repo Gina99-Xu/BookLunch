@@ -17,20 +17,20 @@ export default function ReservationCard({ booking, onDelete }) {
     restaurantId, selectedTableSeat, id, restaurantName, image
   } = booking;
 
-  console.log(typeof parseInt(id));
-
   return (
     <div className="flex border border-primary-800">
-      <div className="relative h-32 aspect-square">
+      <div className="relative w-[180px] min-h-[180px]">
         <Image
           src={image}
-          alt={`restaurantName ${restaurantName}`}
+          alt={`${restaurantName} restaurant`}
           fill
+          sizes="180px"
           className="object-cover border-r border-primary-800"
+          priority
         />
       </div>
 
-      <div className="flex-grow px-6 py-3 flex flex-col">
+      <div className="flex-grow px-6 py-4 flex flex-col">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold">
             {restaurantName}

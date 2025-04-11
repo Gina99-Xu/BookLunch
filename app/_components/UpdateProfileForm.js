@@ -3,38 +3,52 @@
 import { updateUserProfile } from "../_lib/actions";
 import SubmitButton from "./SubmitButton"
 
-
 export default function UpdateProfileForm({ loggedUser, children }) {
-
   const { fullName, email, nationalID } = loggedUser;
 
   return (
-    <form className="py-10 text-lg px-10 flex-col gap-10 border border-stone-700"
-      action={updateUserProfile}>
+    <form 
+      className="bg-white rounded-lg shadow-sm p-8 space-y-6"
+      action={updateUserProfile}
+    >
       <div className="space-y-2">
-        <label>Full Name</label>
+        <label className="block text-sm font-medium text-gray-700">Full Name</label>
         <input
-          className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
-          defaultValue={fullName} name='fullName' />
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+          defaultValue={fullName} 
+          name='fullName' 
+        />
       </div>
       <div className="space-y-2">
-        <label>Email</label>
-        <input className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
-          disabled defaultValue={email} name='email' />
+        <label className="block text-sm font-medium text-gray-700">Email</label>
+        <input 
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-gray-500"
+          disabled 
+          defaultValue={email} 
+          name='email' 
+        />
       </div>
       <div className="space-y-2">
-        <div className="py-4 flex items-center justify-between">
-          <label htmlFor=''>Country of Origin</label>
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-medium text-gray-700">Country of Origin</label>
           {children}
         </div>
       </div>
       <div className="space-y-2">
-        <label>National Identity Card Number</label>
-        <input className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
-          defaultValue={nationalID} name='nationalID' />
+        <label className="block text-sm font-medium text-gray-700">National Identity Card Number</label>
+        <input 
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+          defaultValue={nationalID} 
+          name='nationalID' 
+        />
       </div>
-      <div className="flex justify-end items-center gap-2 mt-4">
-        <SubmitButton pendingLabel="Updating...">Update profile</SubmitButton>
+      <div className="flex justify-end pt-4">
+        <SubmitButton 
+          pendingLabel="Updating..." 
+          className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+        >
+          Update profile
+        </SubmitButton>
       </div>
     </form>
   )

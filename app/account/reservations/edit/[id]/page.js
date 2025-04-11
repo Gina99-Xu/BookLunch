@@ -4,7 +4,8 @@ import { getBooking, getRestaurant } from "@/app/_lib/data-service";
 
 
 export default async function Page({ params }) {
-  const { id } = await params;
+  console.log('inside edit reservation page params', params);
+  const { id } =  await params;
   const { restaurantId } = await getBooking(id);
   const restaurant = await getRestaurant(restaurantId);
 

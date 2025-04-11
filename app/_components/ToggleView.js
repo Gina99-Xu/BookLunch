@@ -1,32 +1,35 @@
 'use client'
 
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 
 export default function ToggleView({ children }) {
 
-  const [view, setView] = useState('map'); // Initialize state to manage view
+  const [view, setView] = useState('map'); 
 
   const toggleView = () => {
     setView((prevView) => (prevView === 'map' ? 'list' : 'map'));
   };
 
-  // Assuming the first child is the map and the second is the list
   const mapChild = React.Children.toArray(children)[0];
   const listChild = React.Children.toArray(children)[1];
+
 
   return (
     <div>
       <button
         onClick={toggleView}
-        className="mb-4 border border-gray-100 rounded-md px-4 py-2 font-semibold text-gray-200 bg-gray-800  hover:bg-gray-500 hover:text-gray-100"
+        className="bg-white border-2 border-amber-500 rounded-lg
+              px-4 sm:px-6 py-3 sm:py-3 text-sm sm:text-base text-amber-600 font-bold hover:bg-amber-50 
+              flex items-center justify-center gap-2 mb-4
+              "
       >
         {view === 'map' ? 'List' : 'Map'} View
       </button>
 
       {view === 'map' ? (
-        mapChild
+        React.cloneElement(mapChild, { view: 'map' })
       ) : (
-        listChild
+        React.cloneElement(listChild, { view: 'list' })
       )}
     </div>
   );

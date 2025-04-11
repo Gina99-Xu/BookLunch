@@ -2,38 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-.map-container {
-  height: 100%;
-  width: 100%;
-  position: relative;
-  grid-column: 2 / 6;
-}
-
-.map {
-  height: 100%;
-}
-
+/* Marker Popup Styles */
 :global(.custom-popup .leaflet-popup-tip) {
-  display: none; /* Hide the popup tip (the triangle arrow) */
-  background-color: transparent;
+  display: none;
 }
 
 :global(.custom-popup .leaflet-popup-content-wrapper) {
-  border: none; /* Remove the border around the content box */
-  box-shadow: none; /* Remove shadow around the content */
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: transparent;
+  padding: 0;
+  margin: 0;
+  transform: translateY(-8px);
 }
 
 :global(.custom-popup .leaflet-popup-content) {
-  padding: 0; /* Remove padding */
-  border: none; /* Remove border */
-  box-shadow: none; /* Remove shadow */
-  background-color: transparent;
+  padding: 0;
+  margin: 0 !important;
+  border: none;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  width: 100% !important;
+  max-width: 320px;
 }
 
-/* .custom-day-picker .rdp-nav {
-  color: rgb(21, 21, 21) !important;
-} */
+:global(.popup-container) {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: white;
+}
+
+:global(.leaflet-popup) {
+  margin-bottom: 15px !important;
+}
 
 .custom-day-picker .rdp-nav svg {
   fill: rgb(52, 52, 52) !important;

@@ -6,7 +6,6 @@ import { supabase } from "./supabase";
 import { getBookings } from "./data-service";
 import { redirect } from "next/navigation";
 
-
 /**bookings */
 export async function updateBooking(bookingData) {
 
@@ -39,8 +38,7 @@ export async function updateBooking(bookingData) {
     throw new Error("Bookings could not be updated");
   }
 
-  revalidatePath(`/account/reservations/edit/${parseInt(id)}`)
-  revalidatePath("/account/reservations")
+  revalidatePath("/account/reservations/*")
   redirect("/account/reservations")
 }
 
@@ -65,7 +63,7 @@ export async function createBooking(bookingData, formData) {
     throw new Error("Error insert booking data");
   }
 
-  revalidatePath('/account/reservations')
+  revalidatePath("/account/reservations/*")
   redirect('/restaurants/thankyou')
 }
 
@@ -89,7 +87,7 @@ export async function deleteBooking(bookingId) {
     console.error(error);
     throw new Error("Bookings could not get loaded");
   }
-  revalidatePath('/account/reservations')
+  revalidatePath("/account/reservations/*")
 }
 
 

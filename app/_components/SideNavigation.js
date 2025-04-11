@@ -6,11 +6,7 @@ import { usePathname } from "next/navigation"
 import SignOutButton from "./SignOutButton"
 
 const navLinks = [
-  // {
-  //   name: "Home",
-  //   href: "/account",
-  //   icon: <HomeIcon className="h-5 w-5 text-primary-850" />
-  // },
+
   {
     name: 'My Profile',
     href: "/account",

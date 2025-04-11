@@ -1,127 +1,190 @@
-
 import { supabase } from "./supabase";
 import { notFound } from "next/navigation";
-import { eachDayOfInterval } from "date-fns";
+
 
 
 export async function getBooking(bookingId) {
-  const { data, error } = await supabase
-    .from("bookings")
-    .select("*")
-    .eq("id", bookingId)
-    .single()
+  try {
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("id", bookingId)
+      .single();
 
-  if (error) {
-    console.error(error);
-    throw new Error("Bookings could not get loaded");
+    if (error) throw error;
+    if (!data) notFound();
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching booking:", error.message);
+    throw new Error("Unable to load booking details");
   }
-
-  return data;
 }
+
 
 export async function getBookings(userId) {
-  const { data, error } = await supabase
-    .from("bookings")
-    .select('*')
-    .eq("userId", userId)
+  try {
+    const { data, error } = await supabase
+      .from("bookings")
+      .select('*')
+      .eq("userId", userId);
 
-  if (error) {
-    console.error(error);
-    throw new Error("Bookings could not get loaded");
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching bookings:", error.message);
+    throw new Error("Unable to load bookings");
   }
-
-  return data;
 }
 
+export async function getRestaurant(restaurantId) {
+  try {
+    const { data, error } = await supabase
+      .from('restaurants')
+      .select('*')
+      .eq('id', restaurantId)
+      .single();
 
-export const getRestaurant = async function (restaurantId) {
-  const { data, error } = await supabase.from('restaurants')
-    .select('*')
-    .eq('id', restaurantId)
-    .single()
+    if (!data) {
+      return {
+        data: {},
+        error: 'Failed to fetch restaurant'
+      }
+    }
 
-  if (error) {
-    console.log(error);
-    notFound();
+    return {
+      data,
+      error: null
+    };
+  } catch (error) {
+    return {
+      data: {},
+      error: error.message || "Unable to load restaurant details"
+    }
   }
-  return data;
 }
 
-export const getRestaurants = async function () {
-  const { data, error } = await supabase.from('restaurants')
-    .select('*')
+export async function getRestaurants() {
+  try {
+    const { data, error } = await supabase
+      .from('restaurants')
+      .select('*');
 
-  if (error) {
-    console.error(error);
-    throw new Error('restaurants cannot be loaded')
+    if (error) {
+      return {
+        data: [],
+        error: error.message || 'unable to load restaurants'
+      }
+    }
+
+    if (!data || data.length === 0) {
+      return {
+        data: [],
+        error: "No restaurants found"
+      };
+    }
+    return {
+      data,
+      error: null
+    };
+  } catch (error) {
+    return {
+      data: [],
+      error: error.message || "Unable to load restaurants"
+    };
   }
-
-  return data;
 }
-
 
 
 export async function getCountries() {
   try {
-    const res = await fetch("https://restcountries.com/v2/all?fields=name,flag");
-    const countries = await res.json();
+    const response = await fetch("https://restcountries.com/v2/all?fields=name,flag");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const countries = await response.json();
     return countries;
-  } catch {
-    throw new Error("Error while fetching countries")
+  } catch (error) {
+    console.error("Error fetching countries:", error.message);
+    throw new Error("Unable to load countries data");
   }
 }
 
-
 export async function getSettings() {
-  const { data, error } = await supabase.from("settings").select("*").single();
+  try {
+    const { data, error } = await supabase
+      .from("settings")
+      .select("*")
+      .single();
 
-  if (error) {
-    console.error(error);
-    throw new Error('Properties cannot be loaded')
+    if (error) throw error;
+    if (!data) throw new Error("Settings not found");
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching settings:", error.message);
+    throw new Error("Unable to load settings");
   }
-
-  return data;
 }
 
 export async function getBookedDatesByPropertyId(restaurantId) {
-  let today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-  today = today.toISOString();
+  try {
+    let today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    const isoDate = today.toISOString();
 
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("restaurantId", restaurantId)
+      .or(`selectedDate.gte.${isoDate}`);
 
-  const { data, error } = await supabase
-    .from("bookings")
-    .select("*")
-    .eq("restaurantId", restaurantId)
-    .or(`selectedDate.gte.${today}`);
+    if (error) throw error;
 
+    if (!data || !data.selectedDate) {
+      return null;
+    }
 
-  if (error) {
-    console.error(error);
-    throw new Error("Bookings could not get loaded");
+    return new Date(data.selectedDate);
+  } catch (error) {
+    //console.error("Error fetching booked dates:", error.message);
+    throw new Error("Unable to load booking dates");
   }
-
-  const bookedDate = new Date(data.selectedDate);
-  return bookedDate
-
 }
 
 /** USER PART */
 export async function getUserByEmail(email) {
-  const { data, error } = await supabase.from("users").select("*")
-    .eq("email", email).single()
-  return data;
-}
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .single();
 
+    if (error) throw error;
+
+    return data || null;
+  } catch (error) {
+    console.error("Error fetching user:", error.message);
+    throw new Error("Unable to load user details");
+  }
+}
 
 export async function createUser(newUser) {
-  const { data, error } = await supabase.from("users")
-    .insert([newUser])
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .insert([newUser]);
 
-  if (error) {
-    console.log(error);
-    throw new Error("New user cannot be created")
+    if (error) throw error;
+    if (!data) throw new Error("No data returned after user creation");
+
+    return data;
+  } catch (error) {
+    console.error("Error creating user:", error.message);
+    throw new Error("Unable to create new user");
   }
-
-  return data
 }
+
+

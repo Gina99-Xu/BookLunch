@@ -1,8 +1,10 @@
-import Header from "./_components/Header"
+
 import "@/app/_styles/globals.css"
 import { ReservationProvider } from "./_components/ReservationContext"
 import { CityPositionProvider } from "./_components/CityPositionContext"
 import { TableProvider } from "./_components/TableContext"
+import Header from "./_components/Header"
+
 
 export const metadata = {
   title: {
@@ -15,9 +17,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="antialiased bg-primary-750 text-primary-850 min-h-screen flex flex-col relative">
+      <body className="min-h-screen flex flex-col">
         <Header />
-        <div className="flex-1 px-8 py-12 grid">
+        <div className="px-8 py-12">
           <main className="max-w-7xl mx-auto w-full">
             <CityPositionProvider>
               <ReservationProvider>

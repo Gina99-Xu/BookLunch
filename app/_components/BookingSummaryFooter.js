@@ -1,45 +1,47 @@
+import { CircleDollarSign } from "lucide-react";
 import { useReservation } from "./ReservationContext";
-import { useTable } from "./TableContext";
 
 export function BookingSummaryFooter({ restaurant }) {
-
-  const { selectedDate, resetDate, resetTime, selectedTime } = useReservation();
-
+  const { selectedDate, resetDate, resetTime } = useReservation();
   const { discount, regularPrice } = restaurant;
 
   function resetAll() {
-    console.log('click')
     resetDate();
-    resetTime()
+    resetTime();
   }
 
-
   return (
-    <div className="rounded-md flex items-center justify-between py-4 px-4 bg-gray-200  text-black font-bold mb-2">
-      <div className="flex items-baseline gap-6">
-        <p className="flex gap-2">
-          {discount > 0 ? (
-            <>
-              <span className="text-1xl">Expected Minimum Spent: ${regularPrice - discount}</span>
-              <span className="line-through font-semibold text-primary-700">
-                ${regularPrice}
+    <div className="bg-gray-50 rounded-lg p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-green-50 rounded-lg">
+            <CircleDollarSign className="h-6 w-6 text-green-600" />
+          </div>
+          <div>
+            <p className="text-sm text-gray-500 mb-1">Expected Minimum Spent</p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-lg font-semibold text-gray-900">
+                ${regularPrice - discount}
               </span>
-            </>
-          ) : (
-            <span className="text-2xl">${regularPrice}</span>
-          )}
-          <span className="">/person</span>
-        </p>
-      </div>
+              {discount > 0 && (
+                <span className="text-sm line-through text-red-500">
+                  ${regularPrice}
+                </span>
+              )}
+              <span className="text-sm text-gray-500">per person</span>
+            </div>
+          </div>
+        </div>
 
-      {selectedDate ? (
-        <button
-          onClick={resetAll}
-          className="rounded-md px-6 py-2 text-sm font-semibold bg-white  hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-75"
-        >
-          Clear
-        </button>
-      ) : null}
+        {selectedDate && (
+          <button
+            onClick={resetAll}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+          >
+            Clear Selection
+          </button>
+        )}
+      </div>
     </div>
-  )
+  );
 }

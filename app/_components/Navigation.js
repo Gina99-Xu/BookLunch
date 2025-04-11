@@ -3,17 +3,20 @@ import { auth } from "../_lib/auth";
 import { HomeIcon } from "@heroicons/react/24/solid";
 
 export default async function Navigation() {
+
   const session = await auth();
 
   return (
-    <div className="px-8 py-8 font-semibold flex justify-between items-center mx-auto gap-8">
-      <div className="z-10 flex items-center">
-        <Link href="/" className="hover:text-accent-400 transition-colors">
-          <HomeIcon className="h-8 w-8 text-primary-850" />
-        </Link>
-      </div>
-      <div className="z-10  flex gap-8 items-center">
-        <Link href="/restaurants" className="hover:text-accent-400 transition-colors">
+    <nav className="h-[80px]
+    bg-gray-100/80 backdrop-blur-sm px-8 py-4 font-semibold flex justify-between items-center mx-auto gap-8 
+     ">
+      <div className="flex items-center">
+        < Link href="/" className="hover:text-accent-400 transition-colors" >
+          <HomeIcon className="h-8 w-8 " />
+        </Link >
+      </div >
+      <div className="flex gap-8 items-center">
+        <Link href="/restaurants" className="hover:text-accent-400 transition-colors ">
           Restaurants
         </Link>
         {session?.user ? (
@@ -33,11 +36,11 @@ export default async function Navigation() {
             <span>Welcome {session.user.name}</span>
           </Link>
         ) : (
-          <Link href="/account" className="hover:text-accent-400 transition-colors">
+          <Link href="/login" className="hover:text-accent-400 transition-colors ">
             Login/Signup
           </Link>
         )}
       </div>
-    </div>
+    </nav >
   );
 }

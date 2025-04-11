@@ -5,39 +5,30 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+
   theme: {
-    extend: {
-      colors: {
-        primary: {
-          50: "#E1E8EF",
-          100: "#D4DEE7",
-          200: "#B7C7D7",
-          300: "#99B0C7",
-          400: "#7C99B6",
-          500: "#5E82A6",
-          600: "#4C6B8A",
-          700: "#3C546C",
-          800: "#2C3D4F",
-          900: "#1B2631",
-          950: "#141C24",
-          750: "#fff",
-          850: "#222222"
-        },
-        accent: {
-          50: "#FAF5F0",
-          100: "#F4ECE1",
-          200: "#E8D6BF",
-          300: "#DDC2A2",
-          400: "#D2AF84",
-          500: "#C69963",
-          600: "#B78343",
-          700: "#926835",
-          800: "#6C4D28",
-          900: "#4B351B",
-          950: "#382814",
-        },
-      },
-    },
+    extends: {}
   },
-  plugins: [],
+
+  // plugins: [require('daisyui'), require('@tailwindcss/typography')],
+
+  // daisyui: {
+  //   themes: [
+  //     {
+  //       retro: {
+  //         "primary": "#FFD58E",  // Peach
+  //         "secondary": "#7EB7B3", // Teal
+  //         "accent": "#E8A2AF",    // Pink
+  //         "neutral": "#2A2520",   // Dark Brown
+  //         "base-100": "#F9E2BB",  // Cream
+  //         "info": "#A0C4E2",      // Light Blue
+  //         "success": "#B5EAD7",   // Mint
+  //         "warning": "#FFDAC1",   // Light Orange
+  //         "error": "#FF9AA2",     // Coral
+  //       },
+  //     },
+  //   ],
+  // }
+
+
 };

@@ -6,16 +6,12 @@ import { updateBooking } from "../_lib/actions";
 import { useTable } from "./TableContext";
 import Seating from "./Seatings";
 import DateSelector from "./DateSelector";
-
+import { MessageSquare } from 'lucide-react';
 
 export default function ReservationUpdateForm({ restaurant, bookingId }) {
-
   const { selectedDate, selectedTime } = useReservation();
-
   const { selectedTableSeat } = useTable();
-
   const { regularPrice, discount, id, minimum, image, name } = restaurant;
-
   const priceAfterDiscount = (regularPrice - discount);
 
   const bookingData = {
@@ -33,28 +29,47 @@ export default function ReservationUpdateForm({ restaurant, bookingId }) {
   }
 
   return (
-    <div className="border-l-2 flex flex-col gap-8 bg-stale-200 px-4 py-4">
-      <DateSelector
-        restaurant={restaurant}
-      />
-      <Seating />
-      <form className="flex-grow px-4 text-md grid grid-cols-1"
-        action={async (formData) => {
-          const observations = formData.get("observations");
-          const mergedData = { ...bookingData, observations };
-          await updateBooking(mergedData);
-        }}>
-        <div>
-          <textarea name="observations" id="observations" className="border h-60 mt-4 px-5 py-6 bg-gray-00 text-black font-bold w-full shadow-sm rounded-sm"
-            placeholder="Anything else we should know about before your arrival such as Any allergies, special requirements?"
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <DateSelector restaurant={restaurant} />
+      
+      <div className="border-t border-gray-200 p-6 md:p-8">
+        <Seating />
+        
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <MessageSquare className="h-5 w-5 text-amber-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Special Requests</h3>
+          </div>
+          
+          <form
+            action={async (formData) => {
+              const observations = formData.get("observations");
+              const mergedData = { ...bookingData, observations };
+              await updateBooking(mergedData);
+            }}
+            className="space-y-6"
           >
-          </textarea>
+            <div>
+              <textarea
+                name="observations"
+                id="observations"
+                rows={4}
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-700 placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 resize-none"
+                placeholder="Any allergies, dietary restrictions, or special requirements we should know about?"
+              />
+            </div>
+            
+            <div className="flex justify-end">
+              <SubmitButton
+                pendingLabel="Updating..."
+                className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                Update Booking
+              </SubmitButton>
+            </div>
+          </form>
         </div>
-        <div className="flex flex-col-reverse justify-end">
-          <SubmitButton pendingLabel="Reserving...">Update Now</SubmitButton>
-        </div>
-
-      </form>
+      </div>
     </div>
-  )
+  );
 }
