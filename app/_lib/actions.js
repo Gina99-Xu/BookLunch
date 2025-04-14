@@ -8,9 +8,7 @@ import { redirect } from "next/navigation";
 
 /**bookings */
 export async function updateBooking(bookingData) {
-
   const { id } = bookingData;
-
   const session = await auth();
   if (!session) throw new Error("You must logged in first")
 

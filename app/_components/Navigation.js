@@ -33,12 +33,19 @@ export default async function Navigation() {
               alt={session.user.name}
               referrerPolicy="no-referrer"
             />
-            <span>Welcome {session.user.name}</span>
+        
           </Link>
         ) : (
+          <div className="flex gap-4">
+     
           <Link href="/login" className="hover:text-accent-400 transition-colors ">
-            Login/Signup
+            Login in
           </Link>
+              
+          <Link href="/login" className="hover:text-accent-400 transition-colors ">
+            Signup
+          </Link>
+          </div>
         )}
       </div>
     </nav >
