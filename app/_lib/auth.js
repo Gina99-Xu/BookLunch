@@ -17,28 +17,65 @@ const authConfig = {
     },
 
     async signIn({ user, account, profile }) {
+      console.log('signIn callback triggered');
+      console.log('user is', user);
+      console.log('profile is', profile)
+
+      
       try {
-        const existingUser = await getUserByEmail(user.email);
+        let dbUser = await getUserByEmail(user.email);
 
-        if (!existingUser) {
-          await createUser({ email: user.email, fullName: user.fullName })
+        if (!dbUser) {
+          dbUser = await createUser({ 
+            email: user.email, 
+            name: profile.name || user.name,
+          });
         }
-        return true
 
+        // Add the database user id to the user object
+        user.id = dbUser.id;
+        return true;
       } catch (error) {
-        console.log(error.message)
-        return false
+        console.error('SignIn Error:', error.message);
+        return false;
       }
     },
 
-    async session({ session, user }) {
-      const existingUser = await getUserByEmail(session.user.email);
-      session.user.userId = existingUser.id;
-      return session
+    async session({ session, token }) {
+      console.log('session callback triggered...');
+      console.log('session is', session);
+      console.log('token is', token);
+
+      if (token) {
+        // Use token data to populate session
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.name = token.name;
+      }
+      return session;
+    },
+
+    async jwt({ token, user, account, profile }) {
+      console.log('jwt callback triggered...');
+      console.log('token is', token);
+      console.log('user is', user);
+      console.log('account is', account);
+      console.log('profile is', profile);
+      
+      if (user) {
+        console.log('User is:', user);
+        // Store essential user data in the token
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.picture = user.image;
+      }
+      return token;
     },
 
     pages: {
-      signIn: '/login'
+      signIn: '/login',
+      error: '/auth/error'
     }
   }
 }

@@ -4,7 +4,7 @@ import { updateUserProfile } from "../_lib/actions";
 import SubmitButton from "./SubmitButton"
 
 export default function UpdateProfileForm({ loggedUser, children }) {
-  const { fullName, email, nationalID } = loggedUser;
+  const { name, email, nationalID, nationality} = loggedUser;
 
   return (
     <form 
@@ -12,11 +12,11 @@ export default function UpdateProfileForm({ loggedUser, children }) {
       action={updateUserProfile}
     >
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Full Name</label>
+        <label className="block text-sm font-medium text-gray-700">Name</label>
         <input
           className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-          defaultValue={fullName} 
-          name='fullName' 
+          defaultValue={name} 
+          name='name' 
         />
       </div>
       <div className="space-y-2">
@@ -25,21 +25,26 @@ export default function UpdateProfileForm({ loggedUser, children }) {
           className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-gray-500"
           disabled 
           defaultValue={email} 
-          name='email' 
+          name="email" 
         />
       </div>
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="block text-sm font-medium text-gray-700">Country of Origin</label>
-          {children}
-        </div>
+      <label className="block text-sm font-medium text-gray-700">Country</label>
+        <input
+          type="text"
+          name="nationality"
+          defaultValue={nationality} 
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+          required
+        />
       </div>
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">National Identity Card Number</label>
         <input 
           className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
           defaultValue={nationalID} 
-          name='nationalID' 
+          name="nationalID"
+          required
         />
       </div>
       <div className="flex justify-end pt-4">

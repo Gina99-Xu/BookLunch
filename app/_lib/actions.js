@@ -6,7 +6,7 @@ import { supabase } from "./supabase";
 import { getBookings } from "./data-service";
 import { redirect } from "next/navigation";
 
-/**bookings */
+/** BOOKINGS */
 export async function updateBooking(bookingData) {
   const { id } = bookingData;
   const session = await auth();
@@ -89,7 +89,7 @@ export async function deleteBooking(bookingId) {
 }
 
 
-/**signin and signout */
+/** AUTH */
 export async function signInAction() {
   await signIn("google", { redirectTo: "/account" })
 }
@@ -99,30 +99,67 @@ export async function signOutAction() {
 }
 
 
-/** user */
+/** USER  */
 export async function updateUserProfile(formData) {
   const session = await auth();
+  if (!session) throw new Error("You must be logged in first");
 
-  if (!session) throw new Error("You must logged in first")
+  console.log('debug formData is', formData);
+  const nationalID = formData.get("nationalID");
+  const name = formData.get("name");
+  const nationality = formData.get("nationality");
 
-  const nationalID = formData.get("nationalID")
-  const fullName = formData.get("fullName")
-  const nationality = formData.get("nationality")
-
-  if (!/^[a-zA-Z0-9]{6,12}$/.test(nationalID)) {
-    throw new Error("Please enter valid identity card number")
+  if (!nationalID || !name || !nationality) {
+    throw new Error("All fields are required");
   }
 
-  const dataToUpdate = { nationalID, nationality, fullName }
+  const dataToUpdate = { 
+    nationalID, 
+    nationality, 
+    name 
+  };
+
+  try {
+    const { error } = await supabase
+      .from("users")
+      .update(dataToUpdate)
+      .eq("id", session.user.id);
+
+    if (error) {
+      console.error("Supabase error:", error);
+      throw new Error("Failed to update profile: " + error.message);
+    }
+
+    revalidatePath("/account");
+  } catch (error) {
+    console.error("Profile update error:", error);
+    throw new Error(error.message || "Error updating profile");
+  }
+}
+
+
+export async function updateUserPreferences(formData) {
+  const session = await auth();
+  if (!session) throw new Error("You must logged in first");
+
+  const dataToUpdate = {
+    cuisine_preference: formData.cuisine_preference,
+    cuisine_country: formData.cuisine_country,
+    cuisine_city: formData.cuisine_city,
+    cuisine_budget: formData.cuisine_budget
+  };
 
   const { data, error } = await supabase
     .from("users")
     .update(dataToUpdate)
-    .eq("email", session.user.email)
+    .eq("id", formData.id);
 
-  if (error) throw new Error("Error updating profile")
+  if (error) {
+    console.error("Error updating preferences:", error);
+    return { error };
+  }
 
-  revalidatePath("/account")
-
+  revalidatePath("/account");
+  return { data };
 }
 

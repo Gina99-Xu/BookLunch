@@ -5,7 +5,8 @@ import { getBookings } from "@/app/_lib/data-service";
 export default async function Page() {
 
   const session = await auth();
-  const bookings = await getBookings(session.user.userId);
+  console.log('debug booking session is', session);
+  const bookings = await getBookings(session.user.id);
 
   return (
     <div>

@@ -12,11 +12,3 @@ export const LazyMap = dynamic(
 );
 
 
-export const LazyHomepageMap = dynamic(
-  () => import("@/app/_components/HomepageMap"),
-  {
-    ssr: false,
-    loading: () => <Spinner />
-  }
-
-)

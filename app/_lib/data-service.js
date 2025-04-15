@@ -2,7 +2,6 @@ import { supabase } from "./supabase";
 import { notFound } from "next/navigation";
 
 
-
 export async function getBooking(bookingId) {
   try {
     const { data, error } = await supabase
@@ -23,6 +22,7 @@ export async function getBooking(bookingId) {
 
 
 export async function getBookings(userId) {
+
   try {
     const { data, error } = await supabase
       .from("bookings")
@@ -155,6 +155,11 @@ export async function getBookedDatesByPropertyId(restaurantId) {
 
 /** USER PART */
 export async function getUserByEmail(email) {
+  if (!email) {
+    console.error("No email provided to getUserByEmail");
+    return null;
+  }
+
   try {
     const { data, error } = await supabase
       .from("users")
@@ -162,23 +167,78 @@ export async function getUserByEmail(email) {
       .eq("email", email)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null;
+      }
+      throw error;
+    }
 
-    return data || null;
+    return data;
   } catch (error) {
-    console.error("Error fetching user:", error.message);
+    console.error("Error fetching user by email:", error.message);
+    throw new Error("Unable to load user details");
+  }
+}
+
+export async function getUserById(id) {
+  if (!id) {
+    console.error("No id provided to getUserById");
+    return null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null;
+      }
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching user by id:", error.message);
     throw new Error("Unable to load user details");
   }
 }
 
 export async function createUser(newUser) {
+  console.error("Creating user, newuser is ", newUser);
+
+  if (!newUser?.email) {
+    throw new Error("Email is required to create a user");
+  }
+
   try {
+    const existingUser = await getUserByEmail(newUser.email);
+    if (existingUser) {
+      return existingUser;
+    }
+
+    // Match the exact column names in your database
     const { data, error } = await supabase
       .from("users")
-      .insert([newUser]);
+      .insert([{
+        email: newUser.email,
+        name: newUser.name || ''
+      }])
+      .select()
+      .single();
 
-    if (error) throw error;
-    if (!data) throw new Error("No data returned after user creation");
+    if (error) {
+      console.error("Database error:", error);
+      throw error;
+    }
+    
+    if (!data) {
+      throw new Error("No data returned after user creation");
+    }
 
     return data;
   } catch (error) {
