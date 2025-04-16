@@ -8,15 +8,15 @@ export async function POST(req) {
 
         const session = await auth();
         if (!session) {
-            return new Response(JSON.stringify({ message: 'You must be logged in first' }), { 
-                status: 401 
+            return new Response(JSON.stringify({ message: 'You must be logged in first' }), {
+                status: 401
             });
         }
 
         const user = await getUserById(id);
         if (!user) {
-            return new Response(JSON.stringify({ message: 'User not found' }), { 
-                status: 404 
+            return new Response(JSON.stringify({ message: 'User not found' }), {
+                status: 404
             });
         }
 
@@ -29,24 +29,24 @@ export async function POST(req) {
         });
 
         if (result.error) {
-            return new Response(JSON.stringify({ message: 'Failed to update user preferences' }), { 
-                status: 500 
+            return new Response(JSON.stringify({ message: 'Failed to update user preferences' }), {
+                status: 500
             });
         }
 
-        return new Response(JSON.stringify({ 
+        return new Response(JSON.stringify({
             message: 'User preferences updated successfully',
-            success: true 
-        }), { 
+            success: true
+        }), {
             status: 200,
             headers: {
                 'Content-Type': 'application/json'
             }
         });
     } catch (error) {
-        return new Response(JSON.stringify({ 
-            message: error.message || 'Internal server error' 
-        }), { 
+        return new Response(JSON.stringify({
+            message: error.message || 'Internal server error'
+        }), {
             status: 500,
             headers: {
                 'Content-Type': 'application/json'

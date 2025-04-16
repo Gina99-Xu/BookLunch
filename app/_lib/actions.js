@@ -117,10 +117,10 @@ export async function updateUserProfile(formData) {
     throw new Error("All fields are required");
   }
 
-  const dataToUpdate = { 
-    nationalID, 
-    nationality, 
-    name ,
+  const dataToUpdate = {
+    nationalID,
+    nationality,
+    name,
     cuisine_country,
     cuisine_city,
     cuisine_budget
@@ -169,4 +169,116 @@ export async function updateUserPreferences(formData) {
   revalidatePath("/account");
   return { data };
 }
+
+export async function updateUserPreferenceEmbeddings(embedding) {
+  const session = await auth();
+  if (!session) throw new Error('You must logged in first');
+
+  //check if user preference embeddings already exists
+  const { data: existingData, error: existingError } = await supabase
+    .from('user_preference_embeddings')
+    .select('*')
+    .eq('id', session.user.id)
+    .single();
+
+
+  if (existingData) {
+    const { data, error } = await supabase
+      .from('user_preference_embeddings')
+      .update({
+        embedding: embedding,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', session.user.id);
+
+    if (error) {
+      console.error('Failed to update user preference embeddings:', error);
+      return { error }
+    }
+
+    return { data };
+
+  } else {
+    const { data, error } = await supabase
+      .from('user_preference_embeddings')
+      .insert({
+        id: session.user.id,
+        embedding: embedding,
+        created_at: new Date().toISOString()
+      })
+
+    if (error) {
+      console.error('Failed to create user preference embeddings:', error);
+      return { error }
+    }
+
+    return { data };
+  }
+
+}
+
+
+export async function getUserPreferenceEmbeddings(userId) {
+  const { data: existingData, error: existingError } = await supabase
+    .from('user_preference_embeddings')
+    .select('*')
+    .eq('id', userId)
+    .single();
+
+  if (existingError) {
+    console.error('Failed to get user preference embeddings:', existingError);
+    return { error: existingError, data: null };
+  }
+
+  if (!existingData) {
+    return { error: 'No preference embeddings found for user', data: null };
+  }
+
+  return { data: existingData, error: null };
+}
+
+
+
+
+export async function getMatchedRestaurants(userPreferenceEmbeddings) {
+  const { data, error } = await supabase
+    .rpc('match_restaurants', {
+      query_embedding: userPreferenceEmbeddings.embedding,
+      match_threshold: 0.5,
+      match_count: 10
+    })
+
+  if (error) {
+    console.error('Error fetching matched restaurants:', error)
+    return { error, data: null }
+  }
+
+  return { data, error: null }
+}
+
+export async function storeRestaurantSuggestions(suggestions) {
+  const session = await auth();
+  if (!session) throw new Error('You must logged in first');
+
+  const { data, error } = await supabase
+    .from('restaurants_suggestions')
+    .upsert(
+      suggestions.map(suggestion => ({
+        user_id: session.user.id,
+        restaurant_id: suggestion.id,
+        similarity_score: suggestion.similarity,
+        created_at: new Date().toISOString()
+      })),
+      { onConflict: 'user_id, restaurant_id' }
+    )
+
+  if (error) {
+    console.error('Error storing restaurant suggestions:', error)
+    return { error, data: null }
+  }
+
+  return { data, error: null }
+
+}
+
 

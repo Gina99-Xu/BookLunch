@@ -29,6 +29,8 @@ export default function UserPreferenceForm({userId}) {
         setLoading(true);
         
         try {
+
+            //save user preference 
             const response = await fetch('/api/user-preference', {
                 method: 'POST',
                 headers: {
@@ -44,12 +46,54 @@ export default function UserPreferenceForm({userId}) {
             }
 
             if (data.success) {
-                console.log('success');
+                console.log('/api/user-preference is success');
+                // setShouldRedirect(true);
+                // router.replace('/restaurants');
+                // router.push('/restaurants');
+                // window.location.href = '/restaurants';
+            }
+
+            //generate user preference embeddings
+            const text = `${formData.cuisinePreference}, ${formData.cuisineCountry}, ${formData.cuisineCity}, ${formData.cuisineBudget}`;
+
+            const responseEmbeddings = await fetch('/api/generate-embeddings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text })
+            })
+
+            const embeddingsData = await responseEmbeddings.json();
+            console.log('embeddingsData is ', embeddingsData);
+           
+           
+            //store user preference embeddings
+            const responseStoreEmbeddings = await fetch('/api/store-preference-embeddings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'  
+                },
+                body: JSON.stringify({
+                    userId, 
+                    embedding: embeddingsData.embedding
+                })
+            })  
+
+            const storeEmbeddingsData = await responseStoreEmbeddings.json();
+
+            if(!responseStoreEmbeddings.ok){
+                throw new Error(storeEmbeddingsData.message || 'Failed to store user preference embeddings');
+            }
+
+            if(storeEmbeddingsData.success){
+                console.log('User preference embeddings stored successfully');
                 setShouldRedirect(true);
                 router.replace('/restaurants');
                 router.push('/restaurants');
                 window.location.href = '/restaurants';
             }
+
         } catch (error) {
             console.error('Error updating user preferences:', error);
             setError(error.message || 'An error occurred while updating preferences');

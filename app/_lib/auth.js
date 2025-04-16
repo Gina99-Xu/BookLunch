@@ -21,13 +21,13 @@ const authConfig = {
       console.log('user is', user);
       console.log('profile is', profile)
 
-      
+
       try {
         let dbUser = await getUserByEmail(user.email);
 
         if (!dbUser) {
-          dbUser = await createUser({ 
-            email: user.email, 
+          dbUser = await createUser({
+            email: user.email,
             name: profile.name || user.name,
           });
         }
@@ -61,7 +61,7 @@ const authConfig = {
       console.log('user is', user);
       console.log('account is', account);
       console.log('profile is', profile);
-      
+
       if (user) {
         console.log('User is:', user);
         // Store essential user data in the token

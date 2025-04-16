@@ -248,3 +248,30 @@ export async function createUser(newUser) {
 }
 
 
+export async function getUserPreferences(id) {
+  const {data, error} = await supabase
+  .from('user_preference_embeddings')
+  .select('*')
+  .eq('id', id)
+  .single();
+
+  if(error) {
+    console.error('Error fetching user preferences:', error)
+  }
+  return data; 
+}
+
+export async function getRestaurantSuggestionsByUserId(id) {
+  
+  try{
+  const {data, error} = await supabase
+  .from('restaurants_suggestions')
+  .select('*')
+  .eq('user_id', id)
+  }catch(error){
+  console.error('Error fetching restaurant suggestions:', error)
+  return {error}
+}
+  return data || []; 
+}
+
