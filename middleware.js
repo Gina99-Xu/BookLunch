@@ -3,6 +3,8 @@ import {NextResponse} from "next/server";
 import { getUserById } from "./app/_lib/data-service";
 
 export async function middleware(request) {
+
+  console.log('middleware...debug request is', request);
   const res = NextResponse.next();
   const session = await auth();
 
@@ -15,10 +17,7 @@ export async function middleware(request) {
     '/preferences', 
     '/api', 
     '/login', 
-    '/restaurants',  // Add restaurants to excluded paths
-    '_next', 
-    '/static', 
-    '/favicon.ico'
+    '/restaurants'
   ];
 
   // Check if the current path should be excluded
@@ -37,6 +36,8 @@ export async function middleware(request) {
     // If there's an error, allow the request to continue
     return res;
   }
+
+  console.log('middleware...debug res is', res);
 
   return res;
 }

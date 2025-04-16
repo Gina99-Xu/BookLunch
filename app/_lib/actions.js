@@ -12,7 +12,7 @@ export async function updateBooking(bookingData) {
   const session = await auth();
   if (!session) throw new Error("You must logged in first")
 
-  const userBookings = await getBookings(session.user.userId)
+  const userBookings = await getBookings(session.user.id)
   const userBookingIds = userBookings.map(booking => booking.id)
 
   if (!userBookingIds.includes(parseInt(id))) {
@@ -21,7 +21,7 @@ export async function updateBooking(bookingData) {
 
   const updatedBookingData = {
     ...bookingData,
-    userId: session.user.userId
+    userId: session.user.id
   }
 
   const { error } = await supabase
@@ -45,9 +45,10 @@ export async function createBooking(bookingData, formData) {
   const session = await auth();
   if (!session) throw new Error("You must logged in first")
 
+  console.log('debug bookingData session!!!', session);
   const newBooking = {
     ...bookingData,
-    userId: session.user.userId,
+    userId: session.user.id,
     observations: formData.get("observations"),
   }
 
@@ -70,7 +71,7 @@ export async function deleteBooking(bookingId) {
   const session = await auth();
   if (!session) throw new Error("You must logged in first")
 
-  const userBookings = await getBookings(session.user.userId)
+  const userBookings = await getBookings(session.user.id)
   const userBookingIds = userBookings.map(booking => booking.id)
   if (!userBookingIds.includes(bookingId)) {
     throw new Error('booking id doesnt exit')
@@ -108,15 +109,21 @@ export async function updateUserProfile(formData) {
   const nationalID = formData.get("nationalID");
   const name = formData.get("name");
   const nationality = formData.get("nationality");
+  const cuisine_country = formData.get("cuisine_country");
+  const cuisine_city = formData.get("cuisine_city");
+  const cuisine_budget = formData.get("cuisine_budget");
 
-  if (!nationalID || !name || !nationality) {
+  if (!nationalID || !name || !nationality || !cuisine_country || !cuisine_city || !cuisine_budget) {
     throw new Error("All fields are required");
   }
 
   const dataToUpdate = { 
     nationalID, 
     nationality, 
-    name 
+    name ,
+    cuisine_country,
+    cuisine_city,
+    cuisine_budget
   };
 
   try {
