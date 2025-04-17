@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 
 export default function UserPreferenceForm({userId}) {
+    console.log('INSIDE USERPREFERENCEFORM userId is ', userId);
     const router = useRouter();
     const [isLoading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [shouldRedirect, setShouldRedirect] = useState(false);
 
     const [formData, setFormData] = useState({
-        id: userId,
+        userId: userId,
         cuisinePreference: '',
         cuisineCountry: '',
         cuisineCity: '',
@@ -19,9 +20,9 @@ export default function UserPreferenceForm({userId}) {
 
     useEffect(() => {
         if (shouldRedirect) {
-            window.location.href = '/restaurants';
+            router.push('/restaurants');
         }
-    }, [shouldRedirect]);
+    }, [shouldRedirect, router]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,14 +30,18 @@ export default function UserPreferenceForm({userId}) {
         setLoading(true);
         
         try {
+            // Step 1: Save user preferences
+            const dataToSubmit = {
+                ...formData,
+                userId: userId
+            };
 
-            //save user preference 
             const response = await fetch('/api/user-preference', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(dataToSubmit)
             });
 
             const data = await response.json();
@@ -45,69 +50,72 @@ export default function UserPreferenceForm({userId}) {
                 throw new Error(data.message || 'Failed to update user preferences');
             }
 
-            if (data.success) {
-                console.log('/api/user-preference is success');
-                // setShouldRedirect(true);
-                // router.replace('/restaurants');
-                // router.push('/restaurants');
-                // window.location.href = '/restaurants';
-            }
-
-            //generate user preference embeddings
+            // Step 2: Generate embeddings
             const text = `${formData.cuisinePreference}, ${formData.cuisineCountry}, ${formData.cuisineCity}, ${formData.cuisineBudget}`;
-
+            
             const responseEmbeddings = await fetch('/api/generate-embeddings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ text })
-            })
+                body: JSON.stringify({ 
+                    text,
+                    userId
+                })
+            });
+
+            if (!responseEmbeddings.ok) {
+                throw new Error('Failed to generate embeddings');
+            }
 
             const embeddingsData = await responseEmbeddings.json();
             console.log('embeddingsData is ', embeddingsData);
-           
-           
-            //store user preference embeddings
+
+            if (!embeddingsData.embedding) {
+                throw new Error('No embedding data received');
+            }
+
+            // Step 3: Store embeddings
             const responseStoreEmbeddings = await fetch('/api/store-preference-embeddings', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'  
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    userId, 
+                    userId,
                     embedding: embeddingsData.embedding
                 })
-            })  
+            });
 
-            const storeEmbeddingsData = await responseStoreEmbeddings.json();
-
-            if(!responseStoreEmbeddings.ok){
-                throw new Error(storeEmbeddingsData.message || 'Failed to store user preference embeddings');
+            if (!responseStoreEmbeddings.ok) {
+                const storeError = await responseStoreEmbeddings.json();
+                throw new Error(storeError.message || 'Failed to store embeddings');
             }
 
-            if(storeEmbeddingsData.success){
+            const storeEmbeddingsData = await responseStoreEmbeddings.json();
+            console.log('Store embeddings response:', storeEmbeddingsData);
+
+            if (storeEmbeddingsData.success) {
                 console.log('User preference embeddings stored successfully');
                 setShouldRedirect(true);
-                router.replace('/restaurants');
-                router.push('/restaurants');
-                window.location.href = '/restaurants';
+            } else {
+                throw new Error('Failed to store embeddings: ' + (storeEmbeddingsData.message || 'Unknown error'));
             }
 
         } catch (error) {
-            console.error('Error updating user preferences:', error);
+            console.error('Error in preference submission:', error);
             setError(error.message || 'An error occurred while updating preferences');
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         });
-    }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

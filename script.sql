@@ -43,7 +43,7 @@ CREATE TABLE restaurants_suggestions (
   restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE CASCADE,
   similarity_score FLOAT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 
@@ -141,18 +141,19 @@ updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 
 -- Create a function to find similar restaurants based on embedding similarity
 CREATE OR REPLACE FUNCTION match_restaurants(
-  query_embedding VECTOR(768), -- adjust dimension based on your model
+  query_embedding VECTOR(768),
   match_threshold FLOAT,
   match_count INT
 )
 RETURNS TABLE (
-  id INT,
-  name TEXT,
-  cuisine TEXT,
-  country TEXT,
-  city TEXT,
-  regularPrice INT,
-  description TEXT,
+  id BIGINT,
+  name character varying,
+  cuisine character varying,
+  country character varying,
+  city character varying,
+  "regularPrice" SMALLINT,
+  description character varying,
+  image character varying,
   similarity FLOAT
 )
 LANGUAGE plpgsql
@@ -161,12 +162,13 @@ BEGIN
   RETURN QUERY
   SELECT
     r.id,
-    r.name,
-    r.cuisine,
-    r.country,
-    r.city,
-    r.regularPrice,
-    r.description,
+    r.name::character varying,
+    r.cuisine::character varying,
+    r.country::character varying,
+    r.city::character varying,
+    r."regularPrice"::SMALLINT,
+    r.description::character varying,
+    r.image::character varying,
     1 - (re.embedding <=> query_embedding) AS similarity
   FROM
     restaurants r

@@ -84,6 +84,21 @@ export async function getRestaurants() {
         error: "No restaurants found"
       };
     }
+
+    //check for restaurant embeddings
+    const restaurantIds = data.map(restaurant => restaurant.id);
+    const { data: existingEmbeddings } = await supabase
+      .from('restaurant_embeddings')
+      .select('*')
+      .in('restaurant_id', restaurantIds);
+
+    const existingEmbeddingIds = existingEmbeddings?.map(embedding => embedding.restaurant_id) || [];
+
+    const restaurantsToEmbed = data.filter(restaurant => !existingEmbeddingIds.includes(restaurant.id));
+    if (restaurantsToEmbed.length > 0) {
+      await generateRestaurantEmbeddings(restaurantsToEmbed);
+    }
+
     return {
       data,
       error: null
@@ -96,7 +111,39 @@ export async function getRestaurants() {
   }
 }
 
+async function generateRestaurantEmbeddings(restaurants) {
+  for (const restaurant of restaurants) {
+    try {
 
+      const restaurantText = `${restaurant.name}, ${restaurant.cuisine}, ${restaurant.country}, ${restaurant.city}, ${restaurant.regularPrice}, ${restaurant.description}`
+      const response = await fetch('http://localhost:11434/api/embeddings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'nomic-embed-text',
+          prompt: restaurantText
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate embeddings')
+      }
+
+      const { embedding } = await response.json();
+      await supabase.from('restaurant_embeddings')
+        .insert({
+          restaurant_id: restaurant.id,
+          embedding: embedding,
+          created_at: new Date().toISOString(),
+        })
+
+    } catch (error) {
+      console.error('Error generating restaurant embeddings:', error)
+    }
+  }
+}
 export async function getCountries() {
   try {
     const response = await fetch("https://restcountries.com/v2/all?fields=name,flag");
@@ -235,7 +282,7 @@ export async function createUser(newUser) {
       console.error("Database error:", error);
       throw error;
     }
-    
+
     if (!data) {
       throw new Error("No data returned after user creation");
     }
@@ -249,29 +296,29 @@ export async function createUser(newUser) {
 
 
 export async function getUserPreferences(id) {
-  const {data, error} = await supabase
-  .from('user_preference_embeddings')
-  .select('*')
-  .eq('id', id)
-  .single();
+  const { data, error } = await supabase
+    .from('user_preference_embeddings')
+    .select('*')
+    .eq('id', id)
+    .single();
 
-  if(error) {
+  if (error) {
     console.error('Error fetching user preferences:', error)
   }
-  return data; 
+  return data;
 }
 
 export async function getRestaurantSuggestionsByUserId(id) {
-  
-  try{
-  const {data, error} = await supabase
-  .from('restaurants_suggestions')
-  .select('*')
-  .eq('user_id', id)
-  }catch(error){
-  console.error('Error fetching restaurant suggestions:', error)
-  return {error}
-}
-  return data || []; 
+
+  try {
+    const { data, error } = await supabase
+      .from('restaurants_suggestions')
+      .select('*')
+      .eq('user_id', id)
+  } catch (error) {
+    console.error('Error fetching restaurant suggestions:', error)
+    return { error }
+  }
+  return data || [];
 }
 

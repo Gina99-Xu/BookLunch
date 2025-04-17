@@ -17,6 +17,8 @@ export default async function PreferencesPage() {
     }
 
     return (
-        <UserPreferenceForm userId={session.user.id} />
+        <div className="min-h-screen bg-gray-50 py-12">
+            <UserPreferenceForm userId={session.user.id} />
+        </div>
     );
 }

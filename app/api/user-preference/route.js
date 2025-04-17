@@ -4,7 +4,7 @@ import { auth } from "@/app/_lib/auth";
 
 export async function POST(req) {
     try {
-        const { cuisinePreference, cuisineCountry, cuisineCity, cuisineBudget, id } = await req.json();
+        const { cuisinePreference, cuisineCountry, cuisineCity, cuisineBudget, userId } = await req.json();
 
         const session = await auth();
         if (!session) {
@@ -13,7 +13,7 @@ export async function POST(req) {
             });
         }
 
-        const user = await getUserById(id);
+        const user = await getUserById(userId);
         if (!user) {
             return new Response(JSON.stringify({ message: 'User not found' }), {
                 status: 404
@@ -25,7 +25,7 @@ export async function POST(req) {
             cuisine_country: cuisineCountry,
             cuisine_city: cuisineCity,
             cuisine_budget: cuisineBudget,
-            id
+            id: userId
         });
 
         if (result.error) {

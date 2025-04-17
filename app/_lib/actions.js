@@ -147,7 +147,12 @@ export async function updateUserProfile(formData) {
 
 export async function updateUserPreferences(formData) {
   const session = await auth();
-  if (!session) throw new Error("You must logged in first");
+  if (!session) throw new Error("You must be logged in first");
+
+  if (!formData.id) {
+    console.error("No user ID provided to updateUserPreferences");
+    return { error: new Error("User ID is required") };
+  }
 
   const dataToUpdate = {
     cuisine_preference: formData.cuisine_preference,
@@ -156,85 +161,114 @@ export async function updateUserPreferences(formData) {
     cuisine_budget: formData.cuisine_budget
   };
 
-  const { data, error } = await supabase
-    .from("users")
-    .update(dataToUpdate)
-    .eq("id", formData.id);
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .update(dataToUpdate)
+      .eq("id", formData.id)
+      .select();
 
-  if (error) {
-    console.error("Error updating preferences:", error);
+    if (error) {
+      console.error("Error updating preferences:", error);
+      return { error };
+    }
+
+    revalidatePath("/account");
+    return { data };
+  } catch (error) {
+    console.error("Error in updateUserPreferences:", error);
     return { error };
   }
-
-  revalidatePath("/account");
-  return { data };
 }
 
 export async function updateUserPreferenceEmbeddings(embedding) {
   const session = await auth();
-  if (!session) throw new Error('You must logged in first');
+  if (!session) throw new Error('You must be logged in first');
 
-  //check if user preference embeddings already exists
-  const { data: existingData, error: existingError } = await supabase
-    .from('user_preference_embeddings')
-    .select('*')
-    .eq('id', session.user.id)
-    .single();
-
-
-  if (existingData) {
-    const { data, error } = await supabase
-      .from('user_preference_embeddings')
+  try {
+    // First update the users table with the embedding
+    const { error: userError } = await supabase
+      .from('users')
       .update({
-        embedding: embedding,
-        updated_at: new Date().toISOString()
+        embedding: embedding
       })
       .eq('id', session.user.id);
 
-    if (error) {
-      console.error('Failed to update user preference embeddings:', error);
-      return { error }
+    if (userError) {
+      console.error('Failed to update user embedding:', userError);
+      return { error: userError };
     }
 
-    return { data };
-
-  } else {
-    const { data, error } = await supabase
+    // Now handle the user_preference_embeddings table
+    // Check if entry exists
+    const { data: existingData, error: existingError } = await supabase
       .from('user_preference_embeddings')
-      .insert({
-        id: session.user.id,
-        embedding: embedding,
-        created_at: new Date().toISOString()
-      })
+      .select('*')
+      .eq('user_id', session.user.id)
+      .single();
 
-    if (error) {
-      console.error('Failed to create user preference embeddings:', error);
-      return { error }
+    if (existingData) {
+      // Update existing record
+      const { data, error } = await supabase
+        .from('user_preference_embeddings')
+        .update({
+          embedding: embedding,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', session.user.id);
+
+      if (error) {
+        console.error('Failed to update user preference embeddings:', error);
+        return { error };
+      }
+
+      return { data };
+    } else {
+      // Insert new record
+      const { data, error } = await supabase
+        .from('user_preference_embeddings')
+        .insert({
+          user_id: session.user.id,
+          embedding: embedding,
+          created_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('Failed to create user preference embeddings:', error);
+        return { error };
+      }
+
+      return { data };
     }
-
-    return { data };
+  } catch (error) {
+    console.error('Error in updateUserPreferenceEmbeddings:', error);
+    return { error };
   }
-
 }
 
 
 export async function getUserPreferenceEmbeddings(userId) {
-  const { data: existingData, error: existingError } = await supabase
-    .from('user_preference_embeddings')
-    .select('*')
-    .eq('id', userId)
-    .single();
+  try {
+    const { data: existingData, error: existingError } = await supabase
+      .from('user_preference_embeddings')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
 
-  if (existingError) {
-    console.error('Failed to get user preference embeddings:', existingError);
-    return { error: existingError, data: null };
+    if (existingError) {
+      console.error('Failed to get user preference embeddings:', existingError);
+      return { error: existingError, data: null };
+    }
+
+    if (!existingData) {
+      return { error: 'No preference embeddings found for user', data: null };
+    }
+
+    return { data: existingData, error: null };
+  } catch (error) {
+    console.error('Error in getUserPreferenceEmbeddings:', error);
+    return { error, data: null };
   }
-
-  if (!existingData) {
-    return { error: 'No preference embeddings found for user', data: null };
-  }
-
-  return { data: existingData, error: null };
 }
 
 
