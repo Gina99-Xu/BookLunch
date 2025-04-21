@@ -22,9 +22,6 @@ services:
     environment:
       - NODE_ENV=development
     volumes:
-      - ./public:/app/public
-      - ./app:/app/app
-      - ./.env:/app/.env
       - /app/node_modules
-      - /app/.next
+      - ./:/app
     command: npm run dev

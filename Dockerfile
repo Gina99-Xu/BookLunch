@@ -20,21 +20,6 @@ RUN npm install --legacy-peer-deps
 # Copy source files
 COPY . .
 
-# Create .env.production file using build arguments
-RUN echo "NEXT_PUBLIC_SUPABASE_API_URL=$NEXT_PUBLIC_SUPABASE_API_URL\n\
-NEXT_PUBLIC_SUPABASE_API_KEY=$NEXT_PUBLIC_SUPABASE_API_KEY\n\
-AUTH_GOOGLE_ID=$AUTH_GOOGLE_ID\n\
-AUTH_SECRET=$AUTH_SECRET\n\
-SMTP_USER=$SMTP_USER\n\
-SMTP_PASS=$SMTP_PASS\n\
-SMTP_HOST=$SMTP_HOST\n\
-SMTP_PORT=$SMTP_PORT\n\
-AUTH_URL=$AUTH_URL\n\
-AUTH_TRUST_HOST=$AUTH_TRUST_HOST\n\
-NODE_ENV=production" > .env.production
-
-# Ensure public directory exists (create if not exists)
-RUN mkdir -p public
 
 # Build the application
 RUN npm run build
@@ -51,12 +36,9 @@ COPY --from=builder /app/next.config.mjs ./
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.env.production ./.env.production
 
-# Install only production dependencies
-RUN npm install --omit=dev
 
 EXPOSE 3000
 
 # Use the standalone output from Next.js
-CMD ["node", "server.js"]
+CMD ["npm", "run", "start"]
