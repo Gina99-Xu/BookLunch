@@ -2,6 +2,8 @@ import { updateUserPreferenceEmbeddings } from "@/app/_lib/actions";
 import { auth } from "@/app/_lib/auth";
 import { NextResponse } from "next/server";
 
+// Force this route to be dynamic (not statically generated)
+export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
     const session = await auth();

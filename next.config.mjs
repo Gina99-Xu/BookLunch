@@ -10,6 +10,16 @@ const nextConfig = {
         pathname: "/storage/v1/object/public/propertyBucket/**"
       }
     ]
+  },
+  // Exclude API routes from static generation
+  experimental: {
+    outputFileTracingExcludes: {
+      '*': [
+        'node_modules/@swc/core-linux-x64-gnu',
+        'node_modules/@swc/core-linux-x64-musl',
+        'node_modules/@esbuild/linux-x64',
+      ],
+    },
   }
 };
 

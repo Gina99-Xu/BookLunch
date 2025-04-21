@@ -20,6 +20,8 @@ RUN npm install --legacy-peer-deps
 # Copy source files
 COPY . .
 
+# Create public directory if it doesn't exist
+RUN mkdir -p public
 
 # Build the application
 RUN npm run build
@@ -35,6 +37,11 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/next.config.mjs ./
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+
+# Create public directory in the runner stage
+RUN mkdir -p public
+
+# Copy public directory if it exists (won't fail if empty)
 COPY --from=builder /app/public ./public
 
 

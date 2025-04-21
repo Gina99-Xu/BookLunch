@@ -2,6 +2,9 @@ import { updateUserPreferences } from "@/app/_lib/actions";
 import { getUserById } from "@/app/_lib/data-service";
 import { auth } from "@/app/_lib/auth";
 
+// Force this route to be dynamic (not statically generated)
+export const dynamic = 'force-dynamic';
+
 export async function POST(req) {
     try {
         const { cuisinePreference, cuisineCountry, cuisineCity, cuisineBudget, userId } = await req.json();

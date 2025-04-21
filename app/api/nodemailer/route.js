@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer'
 
+// Force this route to be dynamic (not statically generated)
+export const dynamic = 'force-dynamic';
 
 export async function POST(req) {
 

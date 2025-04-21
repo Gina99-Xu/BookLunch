@@ -2,6 +2,9 @@ import { getMatchedRestaurants, getUserPreferenceEmbeddings, storeRestaurantSugg
 import { NextResponse } from 'next/server';
 import { auth } from "@/app/_lib/auth";
 
+// Force this route to be dynamic (not statically generated)
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     try {
         const session = await auth();
