@@ -65,6 +65,15 @@ export async function getRestaurant(restaurantId) {
   }
 }
 
+export async function getRestaurantsWithoutEmbedding() {
+  const { data, error } = await supabase
+    .from('restaurants')
+    .select('*')
+
+  if (error) throw error;
+  return data;
+}
+
 export async function getRestaurants() {
   try {
     const { data, error } = await supabase

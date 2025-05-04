@@ -1,4 +1,4 @@
-import { getRestaurants } from '../_lib/data-service';
+import { getRestaurants, getUserById } from '../_lib/data-service';
 import { ChevronRightIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense } from 'react';
@@ -8,8 +8,11 @@ import RestaurantListContainer from '../_components/RestaurantListContainer';
 import SearchFilterContainer from '../_components/SearchFilterContainer';
 import ToggleView from '../_components/ToggleView';
 import ErrorComponent from '../_components/ErrorComponent';
+import ChatUI from '../_components/ChatUI';
+import { auth } from '../_lib/auth';
 
 export default async function Page({ searchParams }) {
+  const session = await auth();
 
   const { data: restaurants, error } = await getRestaurants();
   const params = await searchParams;
@@ -27,11 +30,11 @@ export default async function Page({ searchParams }) {
     }
   }
 
-  if(error) {
+  if (error) {
     return (
-   <ErrorComponent error={error} />
+      <ErrorComponent error={error} />
     )
-   }
+  }
 
   if (restaurants.length === 0) return (
     <div className="text-center py-12">
@@ -41,21 +44,27 @@ export default async function Page({ searchParams }) {
 
 
   return (
-    <div className='container mx-auto px-4'>
-      <div className='mt-4'>
-        <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
-          <Link href="/" className="hover:text-gray-700">Home</Link>
-          <ChevronRightIcon className="w-4 h-4" />
-          <span className="text-gray-900">Restaurants</span>
-        </nav>
+    <>
+      <div className='container mx-auto px-4'>
+        <div className='mt-4'>
+          <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
+            <Link href="/" className="hover:text-gray-700">Home</Link>
+            <ChevronRightIcon className="w-4 h-4" />
+            <span className="text-gray-900">Restaurants</span>
+          </nav>
+        </div>
+
+        <Suspense fallback={<Spinner />}>
+          <SearchFilterContainer />
+          <ToggleView>
+            <MapViewContainer restaurants={filteredRestaurants} />
+            <RestaurantListContainer restaurants={filteredRestaurants} />
+          </ToggleView>
+        </Suspense>
       </div>
-      <Suspense fallback={<Spinner />}>
-        <SearchFilterContainer />
-        <ToggleView>
-          <MapViewContainer restaurants={filteredRestaurants} />
-          <RestaurantListContainer restaurants={filteredRestaurants} />
-        </ToggleView>
-      </Suspense>
-    </div>
+
+      {/* ChatUI is placed outside the main content container for proper positioning */}
+      {session?.user?.id && <ChatUI userId={session.user.id} />}
+    </>
   );
 }

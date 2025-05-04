@@ -112,8 +112,10 @@ export async function updateUserProfile(formData) {
   const cuisine_country = formData.get("cuisine_country");
   const cuisine_city = formData.get("cuisine_city");
   const cuisine_budget = formData.get("cuisine_budget");
+  const cuisine_preference = formData.get("cuisine_preference");
 
-  if (!nationalID || !name || !nationality || !cuisine_country || !cuisine_city || !cuisine_budget) {
+
+  if (!nationalID || !name || !nationality || !cuisine_country || !cuisine_city || !cuisine_budget || !cuisine_preference) {
     throw new Error("All fields are required");
   }
 
@@ -123,7 +125,8 @@ export async function updateUserProfile(formData) {
     name,
     cuisine_country,
     cuisine_city,
-    cuisine_budget
+    cuisine_budget,
+    cuisine_preference
   };
 
   try {
@@ -142,6 +145,20 @@ export async function updateUserProfile(formData) {
     console.error("Profile update error:", error);
     throw new Error(error.message || "Error updating profile");
   }
+}
+
+export async function getUserPreference(userId) {
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', userId)
+    .single()
+
+  if (error) {
+    console.log('error in getUserPreference', error);
+    throw error;
+  }
+  return data;
 }
 
 

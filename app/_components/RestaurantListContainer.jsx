@@ -3,7 +3,7 @@ import RestaurantListCard from "./RestaurantListCard";
 export default function RestaurantListContainer({ restaurants }) {
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 pb-20">
       {restaurants && restaurants.length === 0 ? (
         <div className="text-center py-10">
           <h3 className="text-xl font-medium text-gray-700">No restaurants found matching your criteria</h3>
